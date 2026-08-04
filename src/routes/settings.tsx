@@ -1,7 +1,8 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import idealUniform from "@/assets/ideal-uniform.jpg";
+import idealUniformAsset from "@/assets/ideal-uniform-reference.jpg.asset.json";
+const idealUniform = idealUniformAsset.url;
 import { AppHeader } from "@/components/AppHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
