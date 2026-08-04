@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { ClipboardCheck, History, LogOut, Settings, ShieldCheck } from "lucide-react";
+import { BookOpen, ClipboardCheck, History, LogOut, Settings, ShieldCheck } from "lucide-react";
 import { useEffect, useState } from "react";
 import { AppHeader } from "@/components/AppHeader";
 import { currentUser, logout } from "@/lib/auth";
