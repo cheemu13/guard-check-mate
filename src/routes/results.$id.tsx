@@ -112,7 +112,20 @@ function ResultsPage() {
       }
     });
 
+    if (r.result.autoFailReasons?.length) {
+      y += 12;
+      doc.setFont("helvetica", "bold").setFontSize(11).text("Auto-Fail Reasons", margin, y);
+      y += 16;
+      doc.setFont("helvetica", "normal").setFontSize(10);
+      r.result.autoFailReasons.forEach((i) => {
+        const lines = doc.splitTextToSize(`- ${i}`, 515) as string[];
+        doc.text(lines, margin, y);
+        y += 14 * lines.length;
+      });
+    }
+
     y += 12;
+
     doc.setFont("helvetica", "bold").setFontSize(11).text("Critical Issues", margin, y);
     y += 16;
     doc.setFont("helvetica", "normal").setFontSize(10);
