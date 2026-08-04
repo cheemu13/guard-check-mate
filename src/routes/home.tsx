@@ -81,11 +81,18 @@ function HomePage() {
           desc="View and export past inspections"
         />
         <Tile
+          to="/reference"
+          icon={<BookOpen className="h-7 w-7" />}
+          title="Uniform Standard Guide"
+          desc="Pass/fail photo examples and the 13-point checklist"
+        />
+        <Tile
           to="/settings"
           icon={<Settings className="h-7 w-7" />}
           title="Settings"
           desc="Branch defaults, reference image and data"
         />
+
       </nav>
     </div>
   );
