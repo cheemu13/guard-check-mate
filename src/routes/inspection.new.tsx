@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { Camera, Loader2, RefreshCw } from "lucide-react";
+import { Camera, ImageIcon, Loader2, RefreshCw } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import idealUniformAsset from "@/assets/ideal-uniform-reference.jpg.asset.json";
@@ -57,6 +57,7 @@ function NewInspection() {
   const navigate = useNavigate();
   const inspect = useServerFn(inspectUniform);
   const fileRef = useRef<HTMLInputElement>(null);
+  const galleryRef = useRef<HTMLInputElement>(null);
 
   const [branchName, setBranchName] = useState("");
   const [guardName, setGuardName] = useState("");
@@ -170,6 +171,13 @@ function NewInspection() {
             className="hidden"
             onChange={onPick}
           />
+          <input
+            ref={galleryRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={onPick}
+          />
           {photo ? (
             <>
               <img
@@ -177,21 +185,39 @@ function NewInspection() {
                 alt="Captured guard photo"
                 className="mt-3 aspect-3/4 w-full rounded-xl border border-border object-cover"
               />
+              <div className="mt-3 grid grid-cols-2 gap-3">
+                <Button
+                  variant="outline"
+                  className="h-13 w-full font-bold"
+                  onClick={() => fileRef.current?.click()}
+                >
+                  <RefreshCw className="mr-2 h-5 w-5" /> Retake
+                </Button>
+                <Button
+                  variant="outline"
+                  className="h-13 w-full font-bold"
+                  onClick={() => galleryRef.current?.click()}
+                >
+                  <ImageIcon className="mr-2 h-5 w-5" /> Gallery
+                </Button>
+              </div>
+            </>
+          ) : (
+            <>
+              <Button
+                className="mt-3 h-20 w-full text-base font-bold"
+                onClick={() => fileRef.current?.click()}
+              >
+                <Camera className="mr-2 h-6 w-6" /> Capture Guard Photo
+              </Button>
               <Button
                 variant="outline"
                 className="mt-3 h-13 w-full font-bold"
-                onClick={() => fileRef.current?.click()}
+                onClick={() => galleryRef.current?.click()}
               >
-                <RefreshCw className="mr-2 h-5 w-5" /> Retake Photo
+                <ImageIcon className="mr-2 h-5 w-5" /> Upload from Gallery
               </Button>
             </>
-          ) : (
-            <Button
-              className="mt-3 h-20 w-full text-base font-bold"
-              onClick={() => fileRef.current?.click()}
-            >
-              <Camera className="mr-2 h-6 w-6" /> Capture Guard Photo
-            </Button>
           )}
         </section>
 
