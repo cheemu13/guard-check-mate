@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { ClipboardCheck, History, LogOut, Settings, ShieldCheck } from "lucide-react";
+import { BookOpen, ClipboardCheck, History, LogOut, Settings, ShieldCheck } from "lucide-react";
 import { useEffect, useState } from "react";
 import { AppHeader } from "@/components/AppHeader";
 import { currentUser, logout } from "@/lib/auth";
@@ -81,11 +81,18 @@ function HomePage() {
           desc="View and export past inspections"
         />
         <Tile
+          to="/reference"
+          icon={<BookOpen className="h-7 w-7" />}
+          title="Uniform Standard Guide"
+          desc="Pass/fail photo examples and the 13-point checklist"
+        />
+        <Tile
           to="/settings"
           icon={<Settings className="h-7 w-7" />}
           title="Settings"
           desc="Branch defaults, reference image and data"
         />
+
       </nav>
     </div>
   );

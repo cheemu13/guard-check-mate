@@ -1,29 +1,43 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { CHECKLIST_ITEMS, type InspectionResult } from "./inspection";
+import {
+  AUTO_FAIL_RULES,
+  CHECKLIST_SPECS,
+  CRITICALITY_WEIGHT,
+  type ChecklistResult,
+  type InspectionResult,
+} from "./inspection";
 
 const Input = z.object({
   guardPhoto: z.string().min(10),
   referenceImage: z.string().min(10),
 });
 
+const CRITERIA = CHECKLIST_SPECS.map(
+  (s, i) =>
+    `${i + 1}. ${s.item} [${s.criticality}] — PASS: ${s.pass} | FAIL: ${s.fail}`,
+).join("\n");
+
 const PROMPT = `You are a strict uniform inspection officer for ICICI Bank security guards.
 You are given TWO images:
 1. The IDEAL UNIFORM REFERENCE image (how the uniform should look).
 2. The GUARD PHOTO to be inspected.
 
-Compare the guard photo against the reference and inspect each of these items:
-${CHECKLIST_ITEMS.join(", ")}.
+Inspect the guard photo against this official 13-point checklist and its pass/fail criteria:
+${CRITERIA}
 
 For each item assign exactly one status:
 "correct" | "missing" | "incorrectly_worn" | "damaged" | "not_visible".
+Use "not_visible" only when the body part genuinely is not in frame.
 
-Then compute an inspection score from 0 to 100 (correct items score full, not_visible partial, missing/damaged/incorrectly_worn zero),
-list critical issues (missing cap, missing ID card, missing name badge, untucked shirt, dirty or damaged uniform),
-and write a short supervisor summary.
+AUTO-FAIL RULES — if any of these are true, the overall verdict MUST be "fail" and the reason must be listed in autoFailReasons:
+${AUTO_FAIL_RULES.map((r) => `- ${r}`).join("\n")}
+
+List critical issues (any High criticality item that is not correct) and write a short supervisor summary.
 
 Respond with STRICT JSON only, no markdown, in this exact shape:
-{"overall":"pass"|"needs_attention"|"fail","score":number,"checklist":[{"item":"Cap","status":"correct","note":"short note"}],"criticalIssues":["..."],"summary":"..."}`;
+{"overall":"pass"|"needs_attention"|"fail","checklist":[{"item":"Blue Cap","status":"correct","note":"short note"}],"criticalIssues":["..."],"autoFailReasons":["..."],"summary":"..."}
+Use the exact item names from the checklist above.`;
 
 export const inspectUniform = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => Input.parse(data))
@@ -64,17 +78,45 @@ export const inspectUniform = createServerFn({ method: "POST" })
     const match = raw.match(/\{[\s\S]*\}/);
     if (!match) throw new Error("Could not read the AI inspection response.");
 
-    const parsed = JSON.parse(match[0]) as InspectionResult;
-    const known = new Set(CHECKLIST_ITEMS as readonly string[]);
+    const parsed = JSON.parse(match[0]) as Partial<InspectionResult>;
     const byName = new Map((parsed.checklist ?? []).map((c) => [c.item, c]));
+
+    const checklist: ChecklistResult[] = CHECKLIST_SPECS.map((spec) => {
+      const found = byName.get(spec.item);
+      return {
+        item: spec.item,
+        status: found?.status ?? "not_visible",
+        note: found?.note ?? "Not assessed",
+        criticality: spec.criticality,
+      };
+    });
+
+    // Weighted score: correct = full weight, not_visible = half, everything else = 0.
+    const totalWeight = CHECKLIST_SPECS.reduce(
+      (sum, s) => sum + CRITICALITY_WEIGHT[s.criticality],
+      0,
+    );
+    const earned = checklist.reduce((sum, c) => {
+      const w = CRITICALITY_WEIGHT[c.criticality ?? "Minor"];
+      if (c.status === "correct") return sum + w;
+      if (c.status === "not_visible") return sum + w * 0.5;
+      return sum;
+    }, 0);
+    const score = Math.round((earned / totalWeight) * 100);
+
+    const autoFailReasons = parsed.autoFailReasons ?? [];
+    const overall = autoFailReasons.length > 0 || score < 60
+      ? "fail"
+      : score < 90
+        ? "needs_attention"
+        : "pass";
+
     return {
-      overall: parsed.overall ?? "needs_attention",
-      score: Math.max(0, Math.min(100, Math.round(parsed.score ?? 0))),
+      overall,
+      score,
       summary: parsed.summary ?? "",
       criticalIssues: parsed.criticalIssues ?? [],
-      checklist: CHECKLIST_ITEMS.map(
-        (item) =>
-          byName.get(item) ?? { item, status: "not_visible" as const, note: "Not assessed" },
-      ).filter((c) => known.has(c.item)),
+      autoFailReasons,
+      checklist,
     };
   });
