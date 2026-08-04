@@ -9,9 +9,9 @@ export function AppHeader({
   action,
 }: {
   title: string;
-  subtitle?: string;
-  back?: boolean;
-  action?: ReactNode;
+  subtitle?: string | undefined;
+  back?: boolean | undefined;
+  action?: ReactNode | undefined;
 }) {
   const router = useRouter();
   return (
