@@ -14,6 +14,7 @@ import { Route as HistoryRouteImport } from './routes/history'
 import { Route as HomeRouteImport } from './routes/home'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as InspectionNewRouteImport } from './routes/inspection.new'
+import { Route as ResultsIdRouteImport } from './routes/results.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -40,6 +41,11 @@ const InspectionNewRoute = InspectionNewRouteImport.update({
   path: '/inspection/new',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ResultsIdRoute = ResultsIdRouteImport.update({
+  id: '/results/$id',
+  path: '/results/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -47,6 +53,7 @@ export interface FileRoutesByFullPath {
   '/home': typeof HomeRoute
   '/settings': typeof SettingsRoute
   '/inspection/new': typeof InspectionNewRoute
+  '/results/$id': typeof ResultsIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -54,6 +61,7 @@ export interface FileRoutesByTo {
   '/home': typeof HomeRoute
   '/settings': typeof SettingsRoute
   '/inspection/new': typeof InspectionNewRoute
+  '/results/$id': typeof ResultsIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -62,13 +70,33 @@ export interface FileRoutesById {
   '/home': typeof HomeRoute
   '/settings': typeof SettingsRoute
   '/inspection/new': typeof InspectionNewRoute
+  '/results/$id': typeof ResultsIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/history' | '/home' | '/settings' | '/inspection/new'
+  fullPaths:
+    | '/'
+    | '/history'
+    | '/home'
+    | '/settings'
+    | '/inspection/new'
+    | '/results/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/history' | '/home' | '/settings' | '/inspection/new'
-  id: '__root__' | '/' | '/history' | '/home' | '/settings' | '/inspection/new'
+  to:
+    | '/'
+    | '/history'
+    | '/home'
+    | '/settings'
+    | '/inspection/new'
+    | '/results/$id'
+  id:
+    | '__root__'
+    | '/'
+    | '/history'
+    | '/home'
+    | '/settings'
+    | '/inspection/new'
+    | '/results/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -77,6 +105,7 @@ export interface RootRouteChildren {
   HomeRoute: typeof HomeRoute
   SettingsRoute: typeof SettingsRoute
   InspectionNewRoute: typeof InspectionNewRoute
+  ResultsIdRoute: typeof ResultsIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -116,6 +145,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof InspectionNewRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/results/$id': {
+      id: '/results/$id'
+      path: '/results/$id'
+      fullPath: '/results/$id'
+      preLoaderRoute: typeof ResultsIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -125,6 +161,7 @@ const rootRouteChildren: RootRouteChildren = {
   HomeRoute: HomeRoute,
   SettingsRoute: SettingsRoute,
   InspectionNewRoute: InspectionNewRoute,
+  ResultsIdRoute: ResultsIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
