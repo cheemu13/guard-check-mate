@@ -18,7 +18,7 @@ export const Route = createFileRoute("/")({
       { property: "og:title", content: "Login — ICICI Security Uniform Inspection" },
       {
         property: "og:description",
-        content: "Supervisor login for AI-assisted ICICI security guard uniform inspections.",
+        content: "Supervisor login for the ICICI Bank security guard uniform inspection app with AI photo checks.",
       },
     ],
   }),

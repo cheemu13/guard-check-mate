@@ -81,20 +81,24 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         name: "viewport",
         content: "width=device-width, initial-scale=1, viewport-fit=cover",
       },
-      { title: "ICICI Security Uniform Inspection" },
+      { title: "Login — ICICI Security Uniform Inspection" },
       {
         name: "description",
         content:
-          "AI-assisted uniform inspection app for ICICI Bank security guards: capture, compare and score.",
+          "Supervisor login for the ICICI Bank security guard uniform inspection app with AI photo checks.",
       },
       { name: "theme-color", content: "#F37021" },
-      { property: "og:title", content: "ICICI Security Uniform Inspection" },
+      { property: "og:title", content: "Login — ICICI Security Uniform Inspection" },
       {
         property: "og:description",
-        content: "AI-assisted uniform inspection app for ICICI Bank security guards.",
+        content: "Supervisor login for the ICICI Bank security guard uniform inspection app with AI photo checks.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Login — ICICI Security Uniform Inspection" },
+      { name: "twitter:description", content: "Supervisor login for the ICICI Bank security guard uniform inspection app with AI photo checks." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/bc061832-0a44-466c-b47b-0630f626a4d0/id-preview-772353cb--6dee6155-53fc-4163-99fe-0b1b96c2accd.lovable.app-1785857154962.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/bc061832-0a44-466c-b47b-0630f626a4d0/id-preview-772353cb--6dee6155-53fc-4163-99fe-0b1b96c2accd.lovable.app-1785857154962.png" },
     ],
     links: [
       {
