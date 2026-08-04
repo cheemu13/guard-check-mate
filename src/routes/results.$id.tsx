@@ -174,13 +174,35 @@ function ResultsPage() {
           </p>
         </section>
 
+        {result.autoFailReasons?.length ? (
+          <section className="rounded-2xl border-2 border-destructive bg-destructive/5 p-5">
+            <p className="text-sm font-black uppercase tracking-wide text-destructive">
+              Auto-Fail Triggered
+            </p>
+            <ul className="mt-2 list-disc space-y-1 pl-5">
+              {result.autoFailReasons.map((i) => (
+                <li key={i} className="text-sm font-semibold text-destructive">
+                  {i}
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
+
         <section className="rounded-2xl bg-card p-5 card-shadow">
           <p className="text-sm font-bold text-foreground">Checklist</p>
           <ul className="mt-3 divide-y divide-border">
             {result.checklist.map((c) => (
               <li key={c.item} className="grid grid-cols-[minmax(0,1fr)_auto] gap-3 py-3">
                 <div className="min-w-0">
-                  <p className="text-sm font-semibold text-foreground">{c.item}</p>
+                  <p className="text-sm font-semibold text-foreground">
+                    {c.item}
+                    {c.criticality ? (
+                      <span className="ml-2 rounded-full bg-muted px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
+                        {c.criticality}
+                      </span>
+                    ) : null}
+                  </p>
                   {c.note ? <p className="text-xs text-muted-foreground">{c.note}</p> : null}
                 </div>
                 <span
@@ -192,6 +214,7 @@ function ResultsPage() {
             ))}
           </ul>
         </section>
+
 
         <section className="rounded-2xl bg-card p-5 card-shadow">
           <p className="text-sm font-bold text-foreground">Critical Issues</p>
