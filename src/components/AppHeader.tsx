@@ -1,6 +1,7 @@
 import { Link, useRouter } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
+import iciciLogoMark from "@/assets/icici-logo-mark.png";
 import { currentSession } from "@/lib/auth";
 
 export function AppHeader({
@@ -33,9 +34,7 @@ export function AppHeader({
           </button>
         ) : (
           <Link to={homeTo} className="shrink-0">
-            <span className="grid h-10 w-10 place-items-center rounded-full brand-gradient text-sm font-black text-primary-foreground">
-              i
-            </span>
+            <img src={iciciLogoMark} alt="ICICI" className="h-10 w-10 object-contain" />
           </Link>
         )}
         <div className="min-w-0">

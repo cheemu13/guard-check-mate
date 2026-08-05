@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AppHeader } from "@/components/AppHeader";
-import idealUniformAsset from "@/assets/ideal-uniform-reference.jpg.asset.json";
+import idealUniform from "@/assets/ideal-uniform-reference.jpg";
 import { CHECKLIST_SPECS } from "@/lib/inspection";
 import { REFERENCE_GROUPS } from "@/lib/reference-images";
 
@@ -33,7 +33,7 @@ function ReferencePage() {
         <section className="rounded-2xl bg-card p-5 card-shadow">
           <h2 className="text-sm font-bold text-foreground">Ideal Uniform Reference</h2>
           <img
-            src={idealUniformAsset.url}
+            src={idealUniform}
             alt="Ideal ICICI security guard uniform reference"
             loading="lazy"
             className="mt-3 w-full rounded-xl border border-border"
