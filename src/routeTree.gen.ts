@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as HistoryRouteImport } from './routes/history'
 import { Route as HomeRouteImport } from './routes/home'
+import { Route as MyChecksRouteImport } from './routes/my-checks'
 import { Route as ReferenceRouteImport } from './routes/reference'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as SupervisorRouteImport } from './routes/supervisor'
@@ -32,6 +33,11 @@ const HistoryRoute = HistoryRouteImport.update({
 const HomeRoute = HomeRouteImport.update({
   id: '/home',
   path: '/home',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MyChecksRoute = MyChecksRouteImport.update({
+  id: '/my-checks',
+  path: '/my-checks',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ReferenceRoute = ReferenceRouteImport.update({
@@ -69,6 +75,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/history': typeof HistoryRoute
   '/home': typeof HomeRoute
+  '/my-checks': typeof MyChecksRoute
   '/reference': typeof ReferenceRoute
   '/settings': typeof SettingsRoute
   '/supervisor': typeof SupervisorRoute
@@ -80,6 +87,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/history': typeof HistoryRoute
   '/home': typeof HomeRoute
+  '/my-checks': typeof MyChecksRoute
   '/reference': typeof ReferenceRoute
   '/settings': typeof SettingsRoute
   '/supervisor': typeof SupervisorRoute
@@ -92,6 +100,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/history': typeof HistoryRoute
   '/home': typeof HomeRoute
+  '/my-checks': typeof MyChecksRoute
   '/reference': typeof ReferenceRoute
   '/settings': typeof SettingsRoute
   '/supervisor': typeof SupervisorRoute
@@ -105,6 +114,7 @@ export interface FileRouteTypes {
     | '/'
     | '/history'
     | '/home'
+    | '/my-checks'
     | '/reference'
     | '/settings'
     | '/supervisor'
@@ -116,6 +126,7 @@ export interface FileRouteTypes {
     | '/'
     | '/history'
     | '/home'
+    | '/my-checks'
     | '/reference'
     | '/settings'
     | '/supervisor'
@@ -127,6 +138,7 @@ export interface FileRouteTypes {
     | '/'
     | '/history'
     | '/home'
+    | '/my-checks'
     | '/reference'
     | '/settings'
     | '/supervisor'
@@ -139,6 +151,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   HistoryRoute: typeof HistoryRoute
   HomeRoute: typeof HomeRoute
+  MyChecksRoute: typeof MyChecksRoute
   ReferenceRoute: typeof ReferenceRoute
   SettingsRoute: typeof SettingsRoute
   SupervisorRoute: typeof SupervisorRoute
@@ -168,6 +181,13 @@ declare module '@tanstack/react-router' {
       path: '/home'
       fullPath: '/home'
       preLoaderRoute: typeof HomeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/my-checks': {
+      id: '/my-checks'
+      path: '/my-checks'
+      fullPath: '/my-checks'
+      preLoaderRoute: typeof MyChecksRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/reference': {
@@ -219,6 +239,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   HistoryRoute: HistoryRoute,
   HomeRoute: HomeRoute,
+  MyChecksRoute: MyChecksRoute,
   ReferenceRoute: ReferenceRoute,
   SettingsRoute: SettingsRoute,
   SupervisorRoute: SupervisorRoute,
