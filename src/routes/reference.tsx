@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AppHeader } from "@/components/AppHeader";
 import idealUniformAsset from "@/assets/ideal-uniform-reference.jpg.asset.json";
-import { CHECKLIST_SPECS, AUTO_FAIL_RULES } from "@/lib/inspection";
+import { CHECKLIST_SPECS } from "@/lib/inspection";
 import { REFERENCE_GROUPS } from "@/lib/reference-images";
 
 export const Route = createFileRoute("/reference")({
@@ -47,25 +47,9 @@ function ReferencePage() {
               <li key={s.item} className="py-3">
                 <p className="text-sm font-semibold text-foreground">
                   {s.item}
-                  <span className="ml-2 rounded-full bg-muted px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
-                    {s.criticality}
-                  </span>
                 </p>
                 <p className="mt-1 text-xs text-success">✅ {s.pass}</p>
                 <p className="text-xs text-destructive">❌ {s.fail}</p>
-              </li>
-            ))}
-          </ul>
-        </section>
-
-        <section className="rounded-2xl border-2 border-destructive bg-destructive/5 p-5">
-          <h2 className="text-sm font-black uppercase tracking-wide text-destructive">
-            Auto-Fail Conditions
-          </h2>
-          <ul className="mt-2 list-disc space-y-1 pl-5">
-            {AUTO_FAIL_RULES.map((r) => (
-              <li key={r} className="text-sm font-semibold text-destructive">
-                {r}
               </li>
             ))}
           </ul>
