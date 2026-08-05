@@ -100,7 +100,13 @@ function NewInspection() {
     }
   }
 
+  const detailsFilled = branchName.trim() !== "" && guardName.trim() !== "";
+
   async function run() {
+    if (!detailsFilled) {
+      toast.error("Fill in your branch and name first.");
+      return;
+    }
     if (!photo) {
       toast.error("Take your uniform photo first.");
       return;
@@ -264,7 +270,11 @@ function NewInspection() {
       </div>
 
       <div className="fixed inset-x-0 bottom-0 border-t border-border bg-background/95 px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-4 backdrop-blur">
-        <Button onClick={run} disabled={loading} className="h-14 w-full text-base font-bold">
+        <Button
+          onClick={run}
+          disabled={loading || !detailsFilled}
+          className="h-14 w-full text-base font-bold"
+        >
           {loading ? (
             <>
               <Loader2 className="mr-2 h-5 w-5 animate-spin" /> Checking your uniform…
@@ -273,6 +283,11 @@ function NewInspection() {
             "Check My Uniform"
           )}
         </Button>
+        {!detailsFilled && !loading ? (
+          <p className="mt-2 text-center text-sm text-muted-foreground">
+            Fill in your branch and name in Step 2 to continue.
+          </p>
+        ) : null}
       </div>
     </div>
   );
