@@ -101,14 +101,15 @@ function NewInspection() {
   }
 
   const detailsFilled = branchName.trim() !== "" && guardName.trim() !== "";
+  const canCheck = detailsFilled && photo !== null;
 
   async function run() {
-    if (!detailsFilled) {
-      toast.error("Fill in your branch and name first.");
-      return;
-    }
     if (!photo) {
       toast.error("Take your uniform photo first.");
+      return;
+    }
+    if (!detailsFilled) {
+      toast.error("Fill in your branch and name first.");
       return;
     }
     setLoading(true);
@@ -163,7 +164,9 @@ function NewInspection() {
       />
       <div className="space-y-5 px-4 pt-5">
         <section className="rounded-2xl bg-card p-5 card-shadow">
-          <p className="text-base font-bold text-foreground">Step 1 · Take your photo</p>
+          <p className="text-base font-bold text-foreground">
+            Step 1 · Take your photo <span className="text-destructive">*</span>
+          </p>
           <p className="mt-1 text-sm text-muted-foreground">
             Stand straight, full body in the frame, front view.
           </p>
@@ -228,10 +231,14 @@ function NewInspection() {
         <section className="space-y-4 rounded-2xl bg-card p-5 card-shadow">
           <p className="text-base font-bold text-foreground">Step 2 · Your details</p>
           <div className="space-y-2">
-            <Label htmlFor="branch">Branch</Label>
+            <Label htmlFor="branch">
+              Branch <span className="text-destructive">*</span>
+            </Label>
             <Input
               id="branch"
               value={branchName}
+              required
+              aria-required="true"
               maxLength={80}
               onChange={(e) => setBranchName(e.target.value)}
               className="h-13 text-base"
@@ -239,10 +246,14 @@ function NewInspection() {
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="gname">Your Name</Label>
+            <Label htmlFor="gname">
+              Your Name <span className="text-destructive">*</span>
+            </Label>
             <Input
               id="gname"
               value={guardName}
+              required
+              aria-required="true"
               maxLength={80}
               onChange={(e) => setGuardName(e.target.value)}
               className="h-13 text-base"
@@ -272,7 +283,7 @@ function NewInspection() {
       <div className="fixed inset-x-0 bottom-0 border-t border-border bg-background/95 px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-4 backdrop-blur">
         <Button
           onClick={run}
-          disabled={loading || !detailsFilled}
+          disabled={loading || !canCheck}
           className="h-14 w-full text-base font-bold"
         >
           {loading ? (
@@ -283,9 +294,11 @@ function NewInspection() {
             "Check My Uniform"
           )}
         </Button>
-        {!detailsFilled && !loading ? (
+        {!canCheck && !loading ? (
           <p className="mt-2 text-center text-sm text-muted-foreground">
-            Fill in your branch and name in Step 2 to continue.
+            {!photo
+              ? "Take your uniform photo in Step 1 to continue."
+              : "Fill in your branch and name in Step 2 to continue."}
           </p>
         ) : null}
       </div>
