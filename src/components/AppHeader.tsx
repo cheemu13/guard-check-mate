@@ -1,6 +1,6 @@
 import { Link, useRouter } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { currentSession } from "@/lib/auth";
 
 export function AppHeader({
@@ -15,8 +15,11 @@ export function AppHeader({
   action?: ReactNode | undefined;
 }) {
   const router = useRouter();
-  const role = typeof window === "undefined" ? null : currentSession()?.role;
-  const homeTo = role === "supervisor" ? "/supervisor" : role === "guard" ? "/inspection/new" : "/";
+  const [homeTo, setHomeTo] = useState("/");
+  useEffect(() => {
+    const role = currentSession()?.role;
+    setHomeTo(role === "supervisor" ? "/supervisor" : role === "guard" ? "/inspection/new" : "/");
+  }, []);
   return (
     <header className="header-gradient sticky top-0 z-20 px-4 pt-[env(safe-area-inset-top)] pb-4">
       <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 pt-4">
