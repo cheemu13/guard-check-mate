@@ -11,7 +11,6 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as HistoryRouteImport } from './routes/history'
-import { Route as HomeRouteImport } from './routes/home'
 import { Route as MyChecksRouteImport } from './routes/my-checks'
 import { Route as ReferenceRouteImport } from './routes/reference'
 import { Route as ReportsRouteImport } from './routes/reports'
@@ -29,11 +28,6 @@ const IndexRoute = IndexRouteImport.update({
 const HistoryRoute = HistoryRouteImport.update({
   id: '/history',
   path: '/history',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const HomeRoute = HomeRouteImport.update({
-  id: '/home',
-  path: '/home',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MyChecksRoute = MyChecksRouteImport.update({
@@ -80,7 +74,6 @@ const ResultsIdRoute = ResultsIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/history': typeof HistoryRoute
-  '/home': typeof HomeRoute
   '/my-checks': typeof MyChecksRoute
   '/reference': typeof ReferenceRoute
   '/reports': typeof ReportsRoute
@@ -93,7 +86,6 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/history': typeof HistoryRoute
-  '/home': typeof HomeRoute
   '/my-checks': typeof MyChecksRoute
   '/reference': typeof ReferenceRoute
   '/reports': typeof ReportsRoute
@@ -107,7 +99,6 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/history': typeof HistoryRoute
-  '/home': typeof HomeRoute
   '/my-checks': typeof MyChecksRoute
   '/reference': typeof ReferenceRoute
   '/reports': typeof ReportsRoute
@@ -122,7 +113,6 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/history'
-    | '/home'
     | '/my-checks'
     | '/reference'
     | '/reports'
@@ -135,7 +125,6 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/history'
-    | '/home'
     | '/my-checks'
     | '/reference'
     | '/reports'
@@ -148,7 +137,6 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/history'
-    | '/home'
     | '/my-checks'
     | '/reference'
     | '/reports'
@@ -162,7 +150,6 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   HistoryRoute: typeof HistoryRoute
-  HomeRoute: typeof HomeRoute
   MyChecksRoute: typeof MyChecksRoute
   ReferenceRoute: typeof ReferenceRoute
   ReportsRoute: typeof ReportsRoute
@@ -187,13 +174,6 @@ declare module '@tanstack/react-router' {
       path: '/history'
       fullPath: '/history'
       preLoaderRoute: typeof HistoryRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/home': {
-      id: '/home'
-      path: '/home'
-      fullPath: '/home'
-      preLoaderRoute: typeof HomeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/my-checks': {
@@ -258,7 +238,6 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   HistoryRoute: HistoryRoute,
-  HomeRoute: HomeRoute,
   MyChecksRoute: MyChecksRoute,
   ReferenceRoute: ReferenceRoute,
   ReportsRoute: ReportsRoute,

@@ -7,22 +7,24 @@ import { AppHeader } from "@/components/AppHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { currentUser, logout } from "@/lib/auth";
+import { currentSession, logout } from "@/lib/auth";
 import { loadInspections } from "@/lib/inspection";
 
 export const Route = createFileRoute("/settings")({
   head: () => ({
     meta: [
-      { title: "Settings — ICICI Security Uniform Inspection" },
+      { title: "Settings — ICICI Guard Uniform Check" },
       {
         name: "description",
-        content: "Set the default branch, review the ideal uniform reference, and clear data.",
+        content: "Set the default branch, review the uniform reference image and clear stored data.",
       },
-      { property: "og:title", content: "Settings — ICICI Security Uniform Inspection" },
+      { property: "og:title", content: "Settings — ICICI Guard Uniform Check" },
       {
         property: "og:description",
-        content: "Set the default branch, review the ideal uniform reference, and clear data.",
+        content: "Branch defaults, uniform reference image and stored data.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: SettingsPage,
@@ -33,12 +35,17 @@ export const BRANCH_KEY = "icici-default-branch";
 function SettingsPage() {
   const navigate = useNavigate();
   const [branch, setBranch] = useState("");
-  const [user, setUser] = useState<string | null>(null);
+  const [name, setName] = useState("");
 
   useEffect(() => {
+    const s = currentSession();
+    if (s?.role !== "supervisor") {
+      navigate({ to: "/" });
+      return;
+    }
     setBranch(window.localStorage.getItem(BRANCH_KEY) ?? "");
-    setUser(currentUser());
-  }, []);
+    setName(s.name);
+  }, [navigate]);
 
   return (
     <div className="min-h-screen bg-background pb-12">
@@ -66,13 +73,10 @@ function SettingsPage() {
         </section>
 
         <section className="rounded-2xl bg-card p-5 card-shadow">
-          <p className="text-sm font-bold text-foreground">Ideal uniform reference</p>
-          <p className="mt-1 text-xs text-muted-foreground">
-            This image is sent to the AI alongside each guard photo.
-          </p>
+          <p className="text-sm font-bold text-foreground">Uniform reference image</p>
           <img
             src={idealUniform}
-            alt="Ideal ICICI security guard uniform reference"
+            alt="Correct ICICI security guard uniform"
             loading="lazy"
             width={768}
             height={1024}
@@ -83,7 +87,7 @@ function SettingsPage() {
         <section className="rounded-2xl bg-card p-5 card-shadow">
           <p className="text-sm font-bold text-foreground">Account</p>
           <p className="mt-1 text-xs text-muted-foreground">
-            Signed in as {user ?? "—"} · {loadInspections().length} saved inspections
+            Supervisor {name || "—"} · {loadInspections().length} stored inspections
           </p>
           <Button
             variant="outline"
@@ -100,7 +104,7 @@ function SettingsPage() {
             className="mt-3 h-12 w-full font-bold"
             onClick={() => {
               window.localStorage.removeItem("icici-inspections");
-              toast.success("All local inspections cleared");
+              toast.success("All stored inspections cleared");
             }}
           >
             Clear all inspection data
