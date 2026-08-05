@@ -1,14 +1,29 @@
-const KEY = "icici-supervisor";
+const KEY = "icici-session";
 
-export function login(username: string) {
-  window.localStorage.setItem(KEY, username);
+export type Role = "guard" | "supervisor";
+
+export interface Session {
+  role: Role;
+  /** Employee ID for guards, username for supervisors. */
+  id: string;
+  name: string;
+  branch?: string;
+}
+
+export function login(session: Session) {
+  window.localStorage.setItem(KEY, JSON.stringify(session));
 }
 
 export function logout() {
   window.localStorage.removeItem(KEY);
 }
 
-export function currentUser(): string | null {
+export function currentSession(): Session | null {
   if (typeof window === "undefined") return null;
-  return window.localStorage.getItem(KEY);
+  try {
+    const raw = window.localStorage.getItem(KEY);
+    return raw ? (JSON.parse(raw) as Session) : null;
+  } catch {
+    return null;
+  }
 }
