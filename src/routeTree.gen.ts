@@ -14,6 +14,7 @@ import { Route as HistoryRouteImport } from './routes/history'
 import { Route as HomeRouteImport } from './routes/home'
 import { Route as ReferenceRouteImport } from './routes/reference'
 import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as CompleteIdRouteImport } from './routes/complete.$id'
 import { Route as InspectionNewRouteImport } from './routes/inspection.new'
 import { Route as ResultsIdRouteImport } from './routes/results.$id'
 
@@ -42,6 +43,11 @@ const SettingsRoute = SettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CompleteIdRoute = CompleteIdRouteImport.update({
+  id: '/complete/$id',
+  path: '/complete/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const InspectionNewRoute = InspectionNewRouteImport.update({
   id: '/inspection/new',
   path: '/inspection/new',
@@ -59,6 +65,7 @@ export interface FileRoutesByFullPath {
   '/home': typeof HomeRoute
   '/reference': typeof ReferenceRoute
   '/settings': typeof SettingsRoute
+  '/complete/$id': typeof CompleteIdRoute
   '/inspection/new': typeof InspectionNewRoute
   '/results/$id': typeof ResultsIdRoute
 }
@@ -68,6 +75,7 @@ export interface FileRoutesByTo {
   '/home': typeof HomeRoute
   '/reference': typeof ReferenceRoute
   '/settings': typeof SettingsRoute
+  '/complete/$id': typeof CompleteIdRoute
   '/inspection/new': typeof InspectionNewRoute
   '/results/$id': typeof ResultsIdRoute
 }
@@ -78,6 +86,7 @@ export interface FileRoutesById {
   '/home': typeof HomeRoute
   '/reference': typeof ReferenceRoute
   '/settings': typeof SettingsRoute
+  '/complete/$id': typeof CompleteIdRoute
   '/inspection/new': typeof InspectionNewRoute
   '/results/$id': typeof ResultsIdRoute
 }
@@ -89,6 +98,7 @@ export interface FileRouteTypes {
     | '/home'
     | '/reference'
     | '/settings'
+    | '/complete/$id'
     | '/inspection/new'
     | '/results/$id'
   fileRoutesByTo: FileRoutesByTo
@@ -98,6 +108,7 @@ export interface FileRouteTypes {
     | '/home'
     | '/reference'
     | '/settings'
+    | '/complete/$id'
     | '/inspection/new'
     | '/results/$id'
   id:
@@ -107,6 +118,7 @@ export interface FileRouteTypes {
     | '/home'
     | '/reference'
     | '/settings'
+    | '/complete/$id'
     | '/inspection/new'
     | '/results/$id'
   fileRoutesById: FileRoutesById
@@ -117,6 +129,7 @@ export interface RootRouteChildren {
   HomeRoute: typeof HomeRoute
   ReferenceRoute: typeof ReferenceRoute
   SettingsRoute: typeof SettingsRoute
+  CompleteIdRoute: typeof CompleteIdRoute
   InspectionNewRoute: typeof InspectionNewRoute
   ResultsIdRoute: typeof ResultsIdRoute
 }
@@ -158,6 +171,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/complete/$id': {
+      id: '/complete/$id'
+      path: '/complete/$id'
+      fullPath: '/complete/$id'
+      preLoaderRoute: typeof CompleteIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/inspection/new': {
       id: '/inspection/new'
       path: '/inspection/new'
@@ -181,6 +201,7 @@ const rootRouteChildren: RootRouteChildren = {
   HomeRoute: HomeRoute,
   ReferenceRoute: ReferenceRoute,
   SettingsRoute: SettingsRoute,
+  CompleteIdRoute: CompleteIdRoute,
   InspectionNewRoute: InspectionNewRoute,
   ResultsIdRoute: ResultsIdRoute,
 }
