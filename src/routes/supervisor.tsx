@@ -1,45 +1,54 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { BookOpen, ClipboardCheck, History, LogOut, Settings, ShieldCheck } from "lucide-react";
+import { BookOpen, FileText, History, LogOut } from "lucide-react";
 import { useEffect, useState } from "react";
 import { AppHeader } from "@/components/AppHeader";
-import { currentUser, logout } from "@/lib/auth";
+import { currentSession, logout } from "@/lib/auth";
 import { loadInspections } from "@/lib/inspection";
 
-export const Route = createFileRoute("/home")({
+export const Route = createFileRoute("/supervisor")({
   head: () => ({
     meta: [
-      { title: "Home — ICICI Security Uniform Inspection" },
+      { title: "Supervisor — ICICI Guard Uniform Check" },
       {
         name: "description",
-        content: "Start a new guard uniform inspection, review history, or adjust settings.",
+        content: "Supervisor view of guard uniform inspection results, history and reports.",
       },
-      { property: "og:title", content: "Home — ICICI Security Uniform Inspection" },
+      { property: "og:title", content: "Supervisor — ICICI Guard Uniform Check" },
       {
         property: "og:description",
-        content: "Start a new guard uniform inspection, review history, or adjust settings.",
+        content: "View guard uniform inspection results, history and reports.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
-  component: HomePage,
+  component: SupervisorHome,
 });
 
-function HomePage() {
+function SupervisorHome() {
   const navigate = useNavigate();
-  const [user, setUser] = useState<string | null>(null);
+  const [name, setName] = useState("");
   const [count, setCount] = useState(0);
 
   useEffect(() => {
-    const u = currentUser();
-    if (!u) navigate({ to: "/" });
-    setUser(u);
+    const s = currentSession();
+    if (!s) {
+      navigate({ to: "/" });
+      return;
+    }
+    if (s.role !== "supervisor") {
+      navigate({ to: "/inspection/new" });
+      return;
+    }
+    setName(s.name);
     setCount(loadInspections().length);
   }, [navigate]);
 
   return (
     <div className="min-h-screen bg-background pb-12">
       <AppHeader
-        title="ICICI Security Inspection"
-        subtitle={user ? `Signed in as ${user}` : undefined}
+        title="Supervisor"
+        subtitle={name ? `Signed in as ${name}` : undefined}
         action={
           <button
             aria-label="Log out"
@@ -56,43 +65,31 @@ function HomePage() {
 
       <section className="px-4 pt-5">
         <div className="rounded-2xl bg-card p-5 card-shadow">
-          <div className="flex items-center gap-3">
-            <ShieldCheck className="h-6 w-6 shrink-0 text-primary" />
-            <div className="min-w-0">
-              <p className="text-sm text-muted-foreground">Inspections recorded</p>
-              <p className="text-3xl font-black text-foreground">{count}</p>
-            </div>
-          </div>
+          <p className="text-sm text-muted-foreground">Inspections received</p>
+          <p className="text-3xl font-black text-foreground">{count}</p>
         </div>
       </section>
 
       <nav className="mt-5 space-y-4 px-4">
         <Tile
-          to="/inspection/new"
-          icon={<ClipboardCheck className="h-7 w-7" />}
-          title="Start New Inspection"
-          desc="Capture a guard photo and run the AI uniform check"
+          to="/history"
+          icon={<History className="h-7 w-7" />}
+          title="Inspection Results"
+          desc="All guard inspections, newest first"
           primary
         />
         <Tile
-          to="/history"
-          icon={<History className="h-7 w-7" />}
-          title="Inspection History"
-          desc="View and export past inspections"
+          to="/reports"
+          icon={<FileText className="h-7 w-7" />}
+          title="Reports"
+          desc="Most common issues and downloadable reports"
         />
         <Tile
           to="/reference"
           icon={<BookOpen className="h-7 w-7" />}
           title="Uniform Standard Guide"
-          desc="Pass/fail photo examples and the 13-point checklist"
+          desc="Correct and incorrect examples for every item"
         />
-        <Tile
-          to="/settings"
-          icon={<Settings className="h-7 w-7" />}
-          title="Settings"
-          desc="Branch defaults, reference image and data"
-        />
-
       </nav>
     </div>
   );

@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { Camera, ImageIcon, Loader2, RefreshCw } from "lucide-react";
+import { Camera, ImageIcon, Loader2, LogOut, RefreshCw } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import idealUniformAsset from "@/assets/ideal-uniform-reference.jpg.asset.json";
@@ -9,7 +9,7 @@ import { AppHeader } from "@/components/AppHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { currentUser } from "@/lib/auth";
+import { currentSession, logout } from "@/lib/auth";
 import { inspectUniform } from "@/lib/inspect.functions";
 import { saveInspection, type InspectionRecord } from "@/lib/inspection";
 import { BRANCH_KEY } from "./settings";
@@ -17,17 +17,19 @@ import { BRANCH_KEY } from "./settings";
 export const Route = createFileRoute("/inspection/new")({
   head: () => ({
     meta: [
-      { title: "New Inspection — ICICI Security Uniform Inspection" },
+      { title: "Today's Inspection — ICICI Guard Uniform Check" },
       {
         name: "description",
         content:
-          "Capture guard details and a photo, then run an AI uniform comparison against the ideal reference.",
+          "Take your uniform photo and get a simple checklist telling you what is correct and what to fix.",
       },
-      { property: "og:title", content: "New Inspection — ICICI Security Uniform Inspection" },
+      { property: "og:title", content: "Today's Inspection — ICICI Guard Uniform Check" },
       {
         property: "og:description",
-        content: "Capture a guard photo and run the AI uniform compliance check.",
+        content: "Take your uniform photo and get a simple checklist of what to fix.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: NewInspection,
@@ -56,8 +58,9 @@ async function urlToDataUrl(url: string): Promise<string> {
 function NewInspection() {
   const navigate = useNavigate();
   const inspect = useServerFn(inspectUniform);
-  const fileRef = useRef<HTMLInputElement>(null);
+  const cameraRef = useRef<HTMLInputElement>(null);
   const galleryRef = useRef<HTMLInputElement>(null);
+  const opened = useRef(false);
 
   const [branchName, setBranchName] = useState("");
   const [guardName, setGuardName] = useState("");
@@ -67,9 +70,24 @@ function NewInspection() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (!currentUser()) navigate({ to: "/" });
+    const s = currentSession();
+    if (!s) {
+      navigate({ to: "/" });
+      return;
+    }
+    if (s.role === "supervisor") {
+      navigate({ to: "/supervisor" });
+      return;
+    }
+    setGuardName(s.name);
+    setGuardId(s.id);
     setBranchName(window.localStorage.getItem(BRANCH_KEY) ?? "");
     setDateTime(new Date().toISOString());
+    // Open the camera straight away so the guard can start immediately.
+    if (!opened.current) {
+      opened.current = true;
+      window.setTimeout(() => cameraRef.current?.click(), 350);
+    }
   }, [navigate]);
 
   async function onPick(e: React.ChangeEvent<HTMLInputElement>) {
@@ -83,12 +101,8 @@ function NewInspection() {
   }
 
   async function run() {
-    if (!branchName.trim() || !guardName.trim() || !guardId.trim()) {
-      toast.error("Please fill in branch, guard name and guard ID.");
-      return;
-    }
     if (!photo) {
-      toast.error("Capture the guard photo first.");
+      toast.error("Take your uniform photo first.");
       return;
     }
     setLoading(true);
@@ -97,8 +111,8 @@ function NewInspection() {
       const result = await inspect({ data: { guardPhoto: photo, referenceImage } });
       const record: InspectionRecord = {
         id: crypto.randomUUID(),
-        branchName: branchName.trim(),
-        guardName: guardName.trim(),
+        branchName: branchName.trim() || "—",
+        guardName: guardName.trim() || guardId,
         guardId: guardId.trim(),
         dateTime,
         guardPhoto: photo,
@@ -109,7 +123,7 @@ function NewInspection() {
       saveInspection(record);
       navigate({ to: "/results/$id", params: { id: record.id } });
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Inspection failed. Please try again.");
+      toast.error(err instanceof Error ? err.message : "Check failed. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -117,54 +131,30 @@ function NewInspection() {
 
   return (
     <div className="min-h-screen bg-background pb-32">
-      <AppHeader title="New Inspection" back />
+      <AppHeader
+        title="Today's Inspection"
+        subtitle={guardName ? `${guardName} · ${guardId}` : undefined}
+        action={
+          <button
+            aria-label="Log out"
+            onClick={() => {
+              logout();
+              navigate({ to: "/" });
+            }}
+            className="grid h-10 w-10 place-items-center rounded-full bg-primary-foreground/10 text-primary-foreground"
+          >
+            <LogOut className="h-5 w-5" />
+          </button>
+        }
+      />
       <div className="space-y-5 px-4 pt-5">
-        <section className="space-y-4 rounded-2xl bg-card p-5 card-shadow">
-          <div className="space-y-2">
-            <Label htmlFor="branch">Branch Name</Label>
-            <Input
-              id="branch"
-              value={branchName}
-              maxLength={80}
-              onChange={(e) => setBranchName(e.target.value)}
-              className="h-13 text-base"
-              placeholder="e.g. Bandra West Branch"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="gname">Guard Name</Label>
-            <Input
-              id="gname"
-              value={guardName}
-              maxLength={80}
-              onChange={(e) => setGuardName(e.target.value)}
-              className="h-13 text-base"
-              placeholder="e.g. Ramesh Kumar"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="gid">Guard ID</Label>
-            <Input
-              id="gid"
-              value={guardId}
-              maxLength={40}
-              onChange={(e) => setGuardId(e.target.value)}
-              className="h-13 text-base"
-              placeholder="e.g. SG-10428"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label>Date &amp; Time</Label>
-            <div className="flex h-13 items-center rounded-md border border-input bg-muted px-3 text-sm text-muted-foreground">
-              {dateTime ? new Date(dateTime).toLocaleString() : "—"}
-            </div>
-          </div>
-        </section>
-
         <section className="rounded-2xl bg-card p-5 card-shadow">
-          <p className="text-sm font-bold text-foreground">Guard Photo</p>
+          <p className="text-base font-bold text-foreground">Step 1 · Take your photo</p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Stand straight, full body in the frame, front view.
+          </p>
           <input
-            ref={fileRef}
+            ref={cameraRef}
             type="file"
             accept="image/*"
             capture="environment"
@@ -182,14 +172,14 @@ function NewInspection() {
             <>
               <img
                 src={photo}
-                alt="Captured guard photo"
-                className="mt-3 aspect-3/4 w-full rounded-xl border border-border object-cover"
+                alt="Your uniform photo"
+                className="mt-4 aspect-3/4 w-full rounded-xl border border-border object-cover"
               />
               <div className="mt-3 grid grid-cols-2 gap-3">
                 <Button
                   variant="outline"
                   className="h-13 w-full font-bold"
-                  onClick={() => fileRef.current?.click()}
+                  onClick={() => cameraRef.current?.click()}
                 >
                   <RefreshCw className="mr-2 h-5 w-5" /> Retake
                 </Button>
@@ -205,30 +195,58 @@ function NewInspection() {
           ) : (
             <>
               <Button
-                className="mt-3 h-20 w-full text-base font-bold"
-                onClick={() => fileRef.current?.click()}
+                className="mt-4 h-20 w-full text-base font-bold"
+                onClick={() => cameraRef.current?.click()}
               >
-                <Camera className="mr-2 h-6 w-6" /> Capture Guard Photo
+                <Camera className="mr-2 h-6 w-6" /> Open Camera
               </Button>
               <Button
                 variant="outline"
                 className="mt-3 h-13 w-full font-bold"
                 onClick={() => galleryRef.current?.click()}
               >
-                <ImageIcon className="mr-2 h-5 w-5" /> Upload from Gallery
+                <ImageIcon className="mr-2 h-5 w-5" /> Choose from Gallery
               </Button>
             </>
           )}
         </section>
 
+        <section className="space-y-4 rounded-2xl bg-card p-5 card-shadow">
+          <p className="text-base font-bold text-foreground">Step 2 · Your details</p>
+          <div className="space-y-2">
+            <Label htmlFor="branch">Branch</Label>
+            <Input
+              id="branch"
+              value={branchName}
+              maxLength={80}
+              onChange={(e) => setBranchName(e.target.value)}
+              className="h-13 text-base"
+              placeholder="e.g. Bandra West Branch"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="gname">Your Name</Label>
+            <Input
+              id="gname"
+              value={guardName}
+              maxLength={80}
+              onChange={(e) => setGuardName(e.target.value)}
+              className="h-13 text-base"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>Date &amp; Time</Label>
+            <div className="flex h-13 items-center rounded-md border border-input bg-muted px-3 text-sm text-muted-foreground">
+              {dateTime ? new Date(dateTime).toLocaleString() : "—"}
+            </div>
+          </div>
+        </section>
+
         <section className="rounded-2xl bg-card p-5 card-shadow">
-          <p className="text-sm font-bold text-foreground">Ideal Uniform Reference</p>
-          <p className="mt-1 text-xs text-muted-foreground">
-            The AI compares the guard photo against this standard.
-          </p>
+          <p className="text-sm font-bold text-foreground">How your uniform should look</p>
           <img
             src={idealUniform}
-            alt="Ideal ICICI security guard uniform reference"
+            alt="Correct ICICI security guard uniform"
             loading="lazy"
             width={768}
             height={1024}
@@ -241,10 +259,10 @@ function NewInspection() {
         <Button onClick={run} disabled={loading} className="h-14 w-full text-base font-bold">
           {loading ? (
             <>
-              <Loader2 className="mr-2 h-5 w-5 animate-spin" /> Inspecting uniform…
+              <Loader2 className="mr-2 h-5 w-5 animate-spin" /> Checking your uniform…
             </>
           ) : (
-            "Inspect Uniform"
+            "Check My Uniform"
           )}
         </Button>
       </div>

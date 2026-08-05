@@ -1,11 +1,11 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import {
-  AUTO_FAIL_RULES,
   CHECKLIST_SPECS,
-  CRITICALITY_WEIGHT,
+  RECOMMENDATION_BY_ITEM,
   type ChecklistResult,
   type InspectionResult,
+  type ItemStatus,
 } from "./inspection";
 
 const Input = z.object({
@@ -14,36 +14,37 @@ const Input = z.object({
 });
 
 const CRITERIA = CHECKLIST_SPECS.map(
-  (s, i) =>
-    `${i + 1}. ${s.item} [${s.criticality}] — PASS: ${s.pass} | FAIL: ${s.fail}`,
+  (s, i) => `${i + 1}. ${s.item} — CORRECT: ${s.pass} | NOT CORRECT: ${s.fail}`,
 ).join("\n");
 
-const PROMPT = `You are a strict uniform inspection officer for ICICI Bank security guards.
+const PROMPT = `You are checking the uniform of an ICICI Bank security guard.
 You are given TWO images:
 1. The IDEAL UNIFORM REFERENCE image (how the uniform should look).
-2. The GUARD PHOTO to be inspected.
+2. The GUARD PHOTO to be checked.
 
-Inspect the guard photo against this official 13-point checklist and its pass/fail criteria:
+Check the guard photo against this 13-point checklist:
 ${CRITERIA}
 
 For each item assign exactly one status:
-"correct" | "missing" | "incorrectly_worn" | "damaged" | "not_visible".
-Use "not_visible" only when the body part genuinely is not in frame.
+"correct" — the item meets the standard
+"needs_correction" — the item is present but worn wrongly, damaged, dirty or not visible
+"missing" — the item is not there at all
 
-AUTO-FAIL RULES — if any of these are true, the overall verdict MUST be "fail" and the reason must be listed in autoFailReasons:
-${AUTO_FAIL_RULES.map((r) => `- ${r}`).join("\n")}
-
-List critical issues (any High criticality item that is not correct) and write a short supervisor summary.
+Do NOT give any score, percentage, rating or marks.
+For every item that is not "correct", write a very short recommendation in simple words
+(max 8 words), for example "Name badge missing" or "Shirt is not tucked in".
 
 Respond with STRICT JSON only, no markdown, in this exact shape:
-{"overall":"pass"|"needs_attention"|"fail","checklist":[{"item":"Blue Cap","status":"correct","note":"short note"}],"criticalIssues":["..."],"autoFailReasons":["..."],"summary":"..."}
+{"checklist":[{"item":"Blue Cap","status":"correct","recommendation":""}]}
 Use the exact item names from the checklist above.`;
+
+const STATUSES: ItemStatus[] = ["correct", "needs_correction", "missing"];
 
 export const inspectUniform = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => Input.parse(data))
   .handler(async ({ data }): Promise<InspectionResult> => {
     const key = process.env["LOVABLE_API_KEY"];
-    if (!key) throw new Error("AI is not configured on this device.");
+    if (!key) throw new Error("Uniform check is not configured on this device.");
 
     const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -61,7 +62,7 @@ export const inspectUniform = createServerFn({ method: "POST" })
               { type: "text", text: PROMPT },
               { type: "text", text: "IDEAL UNIFORM REFERENCE IMAGE:" },
               { type: "image_url", image_url: { url: data.referenceImage } },
-              { type: "text", text: "GUARD PHOTO TO INSPECT:" },
+              { type: "text", text: "GUARD PHOTO TO CHECK:" },
               { type: "image_url", image_url: { url: data.guardPhoto } },
             ],
           },
@@ -70,53 +71,35 @@ export const inspectUniform = createServerFn({ method: "POST" })
     });
 
     if (res.status === 429) throw new Error("Too many requests. Please try again shortly.");
-    if (res.status === 402) throw new Error("AI credits exhausted. Please top up to continue.");
-    if (!res.ok) throw new Error(`Inspection failed (${res.status}). ${await res.text()}`);
+    if (res.status === 402) throw new Error("Service limit reached. Please contact your supervisor.");
+    if (!res.ok) throw new Error(`Uniform check failed (${res.status}). Please try again.`);
 
     const json = (await res.json()) as { choices?: { message?: { content?: string } }[] };
     const raw = json.choices?.[0]?.message?.content ?? "";
     const match = raw.match(/\{[\s\S]*\}/);
-    if (!match) throw new Error("Could not read the AI inspection response.");
+    if (!match) throw new Error("Could not read the uniform check response.");
 
-    const parsed = JSON.parse(match[0]) as Partial<InspectionResult>;
+    const parsed = JSON.parse(match[0]) as { checklist?: ChecklistResult[] };
     const byName = new Map((parsed.checklist ?? []).map((c) => [c.item, c]));
 
     const checklist: ChecklistResult[] = CHECKLIST_SPECS.map((spec) => {
       const found = byName.get(spec.item);
-      return {
-        item: spec.item,
-        status: found?.status ?? "not_visible",
-        note: found?.note ?? "Not assessed",
-        criticality: spec.criticality,
-      };
+      const status: ItemStatus =
+        found && STATUSES.includes(found.status) ? found.status : "needs_correction";
+      if (status === "correct") return { item: spec.item, status };
+      const recommendation =
+        (found?.recommendation ?? "").trim() || RECOMMENDATION_BY_ITEM[spec.item] || spec.fail;
+      return { item: spec.item, status, recommendation };
     });
 
-    // Weighted score: correct = full weight, not_visible = half, everything else = 0.
-    const totalWeight = CHECKLIST_SPECS.reduce(
-      (sum, s) => sum + CRITICALITY_WEIGHT[s.criticality],
-      0,
-    );
-    const earned = checklist.reduce((sum, c) => {
-      const w = CRITICALITY_WEIGHT[c.criticality ?? "Minor"];
-      if (c.status === "correct") return sum + w;
-      if (c.status === "not_visible") return sum + w * 0.5;
-      return sum;
-    }, 0);
-    const score = Math.round((earned / totalWeight) * 100);
-
-    const autoFailReasons = parsed.autoFailReasons ?? [];
-    const overall = autoFailReasons.length > 0 || score < 60
-      ? "fail"
-      : score < 90
-        ? "needs_attention"
-        : "pass";
+    const recommendations = checklist
+      .filter((c) => c.status !== "correct")
+      .map((c) => c.recommendation ?? "")
+      .filter(Boolean);
 
     return {
-      overall,
-      score,
-      summary: parsed.summary ?? "",
-      criticalIssues: parsed.criticalIssues ?? [],
-      autoFailReasons,
+      overall: recommendations.length === 0 ? "all_correct" : "action_needed",
       checklist,
+      recommendations,
     };
   });

@@ -1,6 +1,7 @@
 import { Link, useRouter } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
+import { currentSession } from "@/lib/auth";
 
 export function AppHeader({
   title,
@@ -14,6 +15,11 @@ export function AppHeader({
   action?: ReactNode | undefined;
 }) {
   const router = useRouter();
+  const [homeTo, setHomeTo] = useState("/");
+  useEffect(() => {
+    const role = currentSession()?.role;
+    setHomeTo(role === "supervisor" ? "/supervisor" : role === "guard" ? "/inspection/new" : "/");
+  }, []);
   return (
     <header className="header-gradient sticky top-0 z-20 px-4 pt-[env(safe-area-inset-top)] pb-4">
       <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 pt-4">
@@ -26,7 +32,7 @@ export function AppHeader({
             <ArrowLeft className="h-5 w-5" />
           </button>
         ) : (
-          <Link to="/home" className="shrink-0">
+          <Link to={homeTo} className="shrink-0">
             <span className="grid h-10 w-10 place-items-center rounded-full brand-gradient text-sm font-black text-primary-foreground">
               i
             </span>
