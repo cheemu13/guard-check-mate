@@ -39,8 +39,15 @@ function CompletePage() {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    setRecord(getInspection(id) ?? null);
-    setReady(true);
+    let active = true;
+    getInspection(id).then((found) => {
+      if (!active) return;
+      setRecord(found ?? null);
+      setReady(true);
+    });
+    return () => {
+      active = false;
+    };
   }, [id]);
 
   if (!ready) {
@@ -112,9 +119,16 @@ function CompletePage() {
         <Button
           className="h-14 w-full text-base font-bold"
           disabled={record.submitted}
-          onClick={() => {
+          onClick={async () => {
             const submitted = { ...record, submitted: true };
-            saveInspection(submitted);
+            try {
+              await saveInspection(submitted);
+            } catch (err) {
+              toast.error(
+                err instanceof Error ? err.message : "Could not submit. Please try again.",
+              );
+              return;
+            }
             setRecord(submitted);
             toast.success("Inspection submitted");
             navigate({ to: "/my-checks" });

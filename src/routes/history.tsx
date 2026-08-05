@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { AppHeader } from "@/components/AppHeader";
 import { Button } from "@/components/ui/button";
 import { currentSession } from "@/lib/auth";
@@ -37,7 +38,13 @@ function HistoryPage() {
 
   useEffect(() => {
     setIsSupervisor(currentSession()?.role === "supervisor");
-    setRecords(loadInspections());
+    let active = true;
+    loadInspections().then((all) => {
+      if (active) setRecords(all);
+    });
+    return () => {
+      active = false;
+    };
   }, []);
 
   return (
@@ -81,9 +88,13 @@ function HistoryPage() {
                 </Link>
                 {isSupervisor ? (
                   <button
-                    onClick={() => {
-                      deleteInspection(r.id);
-                      setRecords(loadInspections());
+                    onClick={async () => {
+                      try {
+                        await deleteInspection(r.id);
+                      } catch {
+                        toast.error("Could not delete this inspection.");
+                      }
+                      setRecords(await loadInspections());
                     }}
                     className="mt-3 text-xs font-semibold text-destructive"
                   >

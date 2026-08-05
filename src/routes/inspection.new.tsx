@@ -120,7 +120,15 @@ function NewInspection() {
         comments: "",
         submitted: false,
       };
-      saveInspection(record);
+      // Kept separate from the check itself so a storage failure never reads
+      // as "the uniform check failed" — the check succeeded, the save did not.
+      try {
+        await saveInspection(record);
+      } catch (err) {
+        console.error("Could not save inspection", err);
+        toast.error("Check finished but could not be saved on this device.");
+        return;
+      }
       navigate({ to: "/results/$id", params: { id: record.id } });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Check failed. Please try again.");

@@ -1,3 +1,5 @@
+import { allRecords, getRecord, putRecord, removeRecord } from "./store";
+
 export interface ChecklistSpec {
   item: string;
   pass: string;
@@ -139,32 +141,23 @@ export interface InspectionRecord {
   submitted: boolean;
 }
 
-const KEY = "icici-inspections";
-
-export function loadInspections(): InspectionRecord[] {
-  if (typeof window === "undefined") return [];
-  try {
-    return JSON.parse(window.localStorage.getItem(KEY) ?? "[]") as InspectionRecord[];
-  } catch {
-    return [];
-  }
+/** Newest first. */
+export async function loadInspections(): Promise<InspectionRecord[]> {
+  const all = await allRecords<InspectionRecord>();
+  return all.sort((a, b) => (a.dateTime < b.dateTime ? 1 : a.dateTime > b.dateTime ? -1 : 0));
 }
 
-export function saveInspection(record: InspectionRecord) {
-  const all = loadInspections().filter((r) => r.id !== record.id);
-  all.unshift(record);
-  window.localStorage.setItem(KEY, JSON.stringify(all));
+/** Rejects if the record could not be stored — do not treat this as fire-and-forget. */
+export async function saveInspection(record: InspectionRecord): Promise<void> {
+  await putRecord(record);
 }
 
-export function getInspection(id: string): InspectionRecord | undefined {
-  return loadInspections().find((r) => r.id === id);
+export async function getInspection(id: string): Promise<InspectionRecord | undefined> {
+  return getRecord<InspectionRecord>(id);
 }
 
-export function deleteInspection(id: string) {
-  window.localStorage.setItem(
-    KEY,
-    JSON.stringify(loadInspections().filter((r) => r.id !== id)),
-  );
+export async function deleteInspection(id: string): Promise<void> {
+  await removeRecord(id);
 }
 
 export function issuesOf(result: InspectionResult): ChecklistResult[] {

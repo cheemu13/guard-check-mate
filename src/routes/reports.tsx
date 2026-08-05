@@ -37,7 +37,13 @@ function ReportsPage() {
       navigate({ to: "/" });
       return;
     }
-    setRecords(loadInspections());
+    let active = true;
+    loadInspections().then((all) => {
+      if (active) setRecords(all);
+    });
+    return () => {
+      active = false;
+    };
   }, [navigate]);
 
   const counts = new Map<string, number>();

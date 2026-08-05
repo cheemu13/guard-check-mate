@@ -40,7 +40,13 @@ function MyChecksPage() {
       navigate({ to: "/history" });
       return;
     }
-    setRecords(loadInspections().filter((r) => r.guardId === s.id));
+    let active = true;
+    loadInspections().then((all) => {
+      if (active) setRecords(all.filter((r) => r.guardId === s.id));
+    });
+    return () => {
+      active = false;
+    };
   }, [navigate]);
 
   return (

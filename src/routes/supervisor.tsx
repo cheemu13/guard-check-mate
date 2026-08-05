@@ -41,7 +41,13 @@ function SupervisorHome() {
       return;
     }
     setName(s.name);
-    setCount(loadInspections().length);
+    let active = true;
+    loadInspections().then((all) => {
+      if (active) setCount(all.length);
+    });
+    return () => {
+      active = false;
+    };
   }, [navigate]);
 
   return (

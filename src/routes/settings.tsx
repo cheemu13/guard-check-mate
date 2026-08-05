@@ -36,6 +36,7 @@ function SettingsPage() {
   const navigate = useNavigate();
   const [branch, setBranch] = useState("");
   const [name, setName] = useState("");
+  const [storedCount, setStoredCount] = useState(0);
 
   useEffect(() => {
     const s = currentSession();
@@ -45,6 +46,13 @@ function SettingsPage() {
     }
     setBranch(window.localStorage.getItem(BRANCH_KEY) ?? "");
     setName(s.name);
+    let active = true;
+    loadInspections().then((all) => {
+      if (active) setStoredCount(all.length);
+    });
+    return () => {
+      active = false;
+    };
   }, [navigate]);
 
   return (
@@ -87,7 +95,7 @@ function SettingsPage() {
         <section className="rounded-2xl bg-card p-5 card-shadow">
           <p className="text-sm font-bold text-foreground">Account</p>
           <p className="mt-1 text-xs text-muted-foreground">
-            Supervisor {name || "—"} · {loadInspections().length} stored inspections
+            Supervisor {name || "—"} · {storedCount} stored inspections
           </p>
           <Button
             variant="outline"

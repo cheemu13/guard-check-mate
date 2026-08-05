@@ -105,8 +105,15 @@ function ResultsPage() {
 
   useEffect(() => {
     setIsSupervisor(currentSession()?.role === "supervisor");
-    setRecord(getInspection(id) ?? null);
-    setReady(true);
+    let active = true;
+    getInspection(id).then((found) => {
+      if (!active) return;
+      setRecord(found ?? null);
+      setReady(true);
+    });
+    return () => {
+      active = false;
+    };
   }, [id]);
 
   if (!ready) {
