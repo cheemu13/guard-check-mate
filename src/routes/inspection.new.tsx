@@ -277,6 +277,21 @@ function NewInspection() {
             className="mt-3 w-full rounded-xl border border-border object-cover"
           />
         </section>
+
+        <section className="rounded-2xl bg-card p-5 card-shadow">
+          <p className="text-sm font-bold text-foreground">360° Uniform View</p>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Swipe or tap the arrows to see every side of the correct uniform.
+          </p>
+          <Guard360 className="mt-3" />
+          <Link
+            to="/reference"
+            className="mt-4 block rounded-xl border border-border py-3 text-center text-sm font-semibold text-primary"
+          >
+            Open full Uniform Standard Guide
+          </Link>
+        </section>
+
       </div>
 
       <div className="fixed inset-x-0 bottom-0 border-t border-border bg-background/95 px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-4 backdrop-blur">
