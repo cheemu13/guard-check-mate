@@ -1,5 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AppHeader } from "@/components/AppHeader";
+import { Guard360 } from "@/components/Guard360";
+
 import idealUniform from "@/assets/ideal-uniform-reference.jpg";
 import { CHECKLIST_SPECS } from "@/lib/inspection";
 import { REFERENCE_GROUPS } from "@/lib/reference-images";
