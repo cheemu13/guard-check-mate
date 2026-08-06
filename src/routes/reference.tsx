@@ -41,6 +41,12 @@ function ReferencePage() {
         </section>
 
         <section className="rounded-2xl bg-card p-5 card-shadow">
+          <h2 className="text-sm font-bold text-foreground">360° Uniform View</h2>
+          <Guard360 className="mt-3" />
+        </section>
+
+
+        <section className="rounded-2xl bg-card p-5 card-shadow">
           <h2 className="text-sm font-bold text-foreground">13-Point Checklist</h2>
           <ul className="mt-3 divide-y divide-border">
             {CHECKLIST_SPECS.map((s) => (
