@@ -6,7 +6,7 @@ export function IciciLogo({ className = "" }: { className?: string }) {
       <img
         src={iciciBanner.url}
         alt="ICICI Bank"
-        className="h-14 w-full max-w-[320px] rounded-md object-contain"
+        className="h-11 w-auto max-w-[220px] rounded-md object-contain"
       />
       <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
         Security Inspection

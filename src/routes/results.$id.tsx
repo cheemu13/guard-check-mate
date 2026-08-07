@@ -2,6 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { jsPDF } from "jspdf";
 import { Download, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { AnnotatedPhoto } from "@/components/AnnotatedPhoto";
 import { AppHeader } from "@/components/AppHeader";
 import { Button } from "@/components/ui/button";
 import { currentSession } from "@/lib/auth";
@@ -146,6 +147,12 @@ function ResultsPage() {
       <AppHeader title="Your Checklist" subtitle={record.guardName} back />
 
       <div className="space-y-5 px-4 pt-5">
+        <AnnotatedPhoto
+          photo={record.guardPhoto}
+          alt={`Uniform photo of ${record.guardName}`}
+          result={result}
+        />
+
         <section className="rounded-2xl bg-card p-5 text-center card-shadow">
           <span
             className={`inline-block rounded-full px-4 py-1.5 text-sm font-black uppercase tracking-wide ${OVERALL_META[result.overall].className}`}
@@ -194,16 +201,6 @@ function ResultsPage() {
               </li>
             ))}
           </ul>
-        </section>
-
-        <section className="rounded-2xl bg-card p-5 card-shadow">
-          <p className="text-sm font-bold text-foreground">Your Photo</p>
-          <img
-            src={record.guardPhoto}
-            alt={`Uniform photo of ${record.guardName}`}
-            loading="lazy"
-            className="mt-3 aspect-3/4 w-full rounded-xl border border-border object-cover"
-          />
         </section>
 
         {isSupervisor ? (

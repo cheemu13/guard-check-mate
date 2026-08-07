@@ -69,8 +69,8 @@ function LoginPage() {
   }
 
   return (
-    <main className="flex min-h-screen flex-col bg-background px-6 pb-10 pt-14">
-      <IciciLogo />
+    <main className="flex min-h-screen flex-col bg-background px-6 pb-10 pt-10">
+      <IciciLogo className="self-start" />
       <div className="mt-8">
         <h1 className="text-2xl font-black text-foreground">Daily Uniform Check</h1>
         <p className="mt-1 text-sm text-muted-foreground">Sign in to start your check.</p>
