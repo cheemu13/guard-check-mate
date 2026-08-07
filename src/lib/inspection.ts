@@ -115,11 +115,72 @@ export const OVERALL_META: Record<OverallStatus, { label: string; className: str
   },
 };
 
+/** Severity used to colour the AI annotation overlay. */
+export type Severity = "critical" | "medium" | "minor";
+
+export const SEVERITY_META: Record<
+  Severity,
+  { label: string; color: string; badge: string; ring: string }
+> = {
+  critical: {
+    label: "Critical",
+    color: "var(--severity-critical)",
+    badge: "bg-severity-critical text-white",
+    ring: "border-severity-critical",
+  },
+  medium: {
+    label: "Medium",
+    color: "var(--severity-medium)",
+    badge: "bg-severity-medium text-white",
+    ring: "border-severity-medium",
+  },
+  minor: {
+    label: "Minor",
+    color: "var(--severity-minor)",
+    badge: "bg-severity-minor text-foreground",
+    ring: "border-severity-minor",
+  },
+};
+
+/** Default severity per checklist item, used when the vision model omits one. */
+export const SEVERITY_BY_ITEM: Record<string, Severity> = {
+  "Blue Cap": "medium",
+  "Blue Shirt Condition": "critical",
+  "Shirt Worn Properly": "medium",
+  Collar: "minor",
+  "Chest Badge": "critical",
+  "Side Sleeve Badge": "medium",
+  "ID Card Lanyard": "critical",
+  "Blue Epaulette with Button": "minor",
+  "Black Belt with Metal Buckle": "medium",
+  "Blue Trouser": "medium",
+  "Black Shoes": "medium",
+  "Black Socks": "minor",
+  "Grooming & Accessories": "minor",
+};
+
+/**
+ * Normalised bounding box (0–1) relative to the captured photo, as returned by
+ * the vision model. Rendered as percentages so it scales with any photo size.
+ */
+export interface BoundingBox {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
 export interface ChecklistResult {
   item: string;
   status: ItemStatus;
   /** Short fix instruction, shown only when the item is not correct. */
   recommendation?: string;
+  /** Colour band for the annotation overlay. */
+  severity?: Severity;
+  /** Why the AI flagged this item, in plain words. */
+  reason?: string;
+  /** Where on the photo the issue is, normalised 0–1. Absent = no marker. */
+  box?: BoundingBox;
 }
 
 export interface InspectionResult {
@@ -128,6 +189,24 @@ export interface InspectionResult {
   /** Short list of what to fix, in plain words. */
   recommendations: string[];
 }
+
+/** Short marker caption, e.g. "ID Card Missing". */
+export function annotationLabel(c: ChecklistResult): string {
+  return c.status === "missing" ? `${c.item} Missing` : c.item;
+}
+
+/** Issues that carry usable coordinates for the annotation overlay. */
+export function annotationsOf(result: InspectionResult): ChecklistResult[] {
+  return issuesOf(result).filter(
+    (c) =>
+      c.box != null &&
+      Number.isFinite(c.box.x) &&
+      Number.isFinite(c.box.y) &&
+      c.box.width > 0 &&
+      c.box.height > 0,
+  );
+}
+
 
 export interface InspectionRecord {
   id: string;
