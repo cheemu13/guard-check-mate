@@ -85,7 +85,7 @@ export function VoiceFeedback({
           const start = audio.duration * 0.3;
           const span = (audio.duration - start) / list.length;
           const idx = Math.floor((audio.currentTime - start) / span);
-          highlightRef.current(idx >= 0 && idx < list.length ? list[idx] : null);
+          highlightRef.current(idx >= 0 && idx < list.length ? (list[idx] ?? null) : null);
         };
         setState("ready");
         if (autoplay) {
@@ -183,8 +183,8 @@ export function VoiceFeedback({
                 max={1.3}
                 step={0.05}
                 value={[prefs.rate]}
-                onValueChange={([v]) => setPrefs({ ...prefs, rate: v })}
-                onValueCommit={([v]) => update({ ...prefs, rate: v }, prefs.enabled)}
+                onValueChange={([v]) => setPrefs({ ...prefs, rate: v ?? prefs.rate })}
+                onValueCommit={([v]) => update({ ...prefs, rate: v ?? prefs.rate }, prefs.enabled)}
               />
             </div>
           </PopoverContent>
