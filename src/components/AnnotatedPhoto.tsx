@@ -28,10 +28,13 @@ export function AnnotatedPhoto({
   photo,
   alt,
   result,
+  highlight = null,
 }: {
   photo: string;
   alt: string;
   result: InspectionResult;
+  /** Item name currently being spoken — its box pulses. */
+  highlight?: string | null;
 }) {
   const annotations = annotationsOf(result);
   const [annotated, setAnnotated] = useState(true);
@@ -152,20 +155,25 @@ export function AnnotatedPhoto({
             ? annotations.map((c) => {
                 const sev = SEVERITY_META[c.severity ?? "medium"];
                 const b = c.box!;
+                const live = highlight === c.item;
                 return (
                   <button
                     key={c.item}
                     type="button"
                     onClick={() => setActive(c)}
                     aria-label={`${annotationLabel(c)} — ${sev.label} issue`}
-                    className="absolute rounded-md border-2 bg-transparent"
+                    className={`absolute rounded-md bg-transparent ${
+                      live ? "animate-pulse border-4" : "border-2"
+                    }`}
                     style={{
                       left: `${b.x * 100}%`,
                       top: `${b.y * 100}%`,
                       width: `${b.width * 100}%`,
                       height: `${b.height * 100}%`,
                       borderColor: sev.color,
-                      boxShadow: `0 0 0 9999px transparent, 0 0 12px ${sev.color}`,
+                      boxShadow: live
+                        ? `0 0 0 3px ${sev.color}55, 0 0 24px ${sev.color}`
+                        : `0 0 0 9999px transparent, 0 0 12px ${sev.color}`,
                     }}
                   >
                     <span
