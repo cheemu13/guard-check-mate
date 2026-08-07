@@ -7,6 +7,7 @@ import { VoiceFeedback } from "@/components/VoiceFeedback";
 import { AppHeader } from "@/components/AppHeader";
 import { Button } from "@/components/ui/button";
 import { currentSession } from "@/lib/auth";
+import { hindiItem } from "@/lib/voice";
 import {
   getInspection,
   issuesOf,
@@ -130,11 +131,11 @@ function ResultsPage() {
   if (!record) {
     return (
       <div className="min-h-screen bg-background">
-        <AppHeader title="Your Checklist" back />
+        <AppHeader title="आपकी जाँच सूची" back />
         <div className="px-4 pt-8 text-center">
-          <p className="text-sm text-muted-foreground">This inspection could not be found.</p>
+          <p className="text-sm text-muted-foreground">यह जाँच नहीं मिली।</p>
           <Button asChild className="mt-4 h-12 w-full font-bold">
-            <Link to="/">Back to start</Link>
+            <Link to="/">शुरुआत पर जाएँ</Link>
           </Button>
         </div>
       </div>
@@ -146,7 +147,7 @@ function ResultsPage() {
 
   return (
     <div className="min-h-screen bg-background pb-32">
-      <AppHeader title="Your Checklist" subtitle={record.guardName} back />
+      <AppHeader title="आपकी जाँच सूची" subtitle={record.guardName} back />
 
       <div className="space-y-5 px-4 pt-5">
         <AnnotatedPhoto
@@ -166,19 +167,19 @@ function ResultsPage() {
           <span
             className={`inline-block rounded-full px-4 py-1.5 text-sm font-black uppercase tracking-wide ${OVERALL_META[result.overall].className}`}
           >
-            {OVERALL_META[result.overall].label}
+            {result.overall === "all_correct" ? "सब सही है" : "सुधार ज़रूरी है"}
           </span>
           <p className="mt-3 text-sm text-muted-foreground">
             {issues.length === 0
-              ? "Your uniform is fully correct today."
-              : `${issues.length} item${issues.length > 1 ? "s" : ""} to fix.`}
+              ? "आज आपकी वर्दी पूरी तरह सही है।"
+              : `${issues.length} चीज़ें ठीक करनी हैं।`}
           </p>
         </section>
 
         {issues.length ? (
           <section className="rounded-2xl border-2 border-warning bg-warning/5 p-5">
             <p className="text-sm font-black uppercase tracking-wide text-foreground">
-              What to fix
+              क्या ठीक करना है
             </p>
             <ul className="mt-3 space-y-2">
               {issues.map((c) => (
@@ -192,12 +193,12 @@ function ResultsPage() {
         ) : null}
 
         <section className="rounded-2xl bg-card p-5 card-shadow">
-          <p className="text-sm font-bold text-foreground">Full Checklist</p>
+          <p className="text-sm font-bold text-foreground">पूरी जाँच सूची</p>
           <ul className="mt-3 divide-y divide-border">
             {result.checklist.map((c) => (
               <li key={c.item} className="grid grid-cols-[minmax(0,1fr)_auto] gap-3 py-3">
                 <div className="min-w-0">
-                  <p className="text-sm font-semibold text-foreground">{c.item}</p>
+                  <p className="text-sm font-semibold text-foreground">{hindiItem(c.item)}</p>
                   {c.status !== "correct" && c.recommendation ? (
                     <p className="text-xs text-muted-foreground">{c.recommendation}</p>
                   ) : null}
@@ -205,7 +206,12 @@ function ResultsPage() {
                 <span
                   className={`shrink-0 text-right text-xs font-bold ${STATUS_META[c.status].tone}`}
                 >
-                  {STATUS_META[c.status].icon} {STATUS_META[c.status].label}
+                  {STATUS_META[c.status].icon}{" "}
+                  {c.status === "correct"
+                    ? "सही"
+                    : c.status === "missing"
+                      ? "गायब"
+                      : "सुधार करें"}
                 </span>
               </li>
             ))}
@@ -218,7 +224,7 @@ function ResultsPage() {
             className="h-14 w-full text-base font-bold"
             onClick={() => exportInspectionPdf(record)}
           >
-            <Download className="mr-2 h-5 w-5" /> Download Report
+            <Download className="mr-2 h-5 w-5" /> रिपोर्ट डाउनलोड करें
           </Button>
         ) : null}
       </div>
@@ -229,7 +235,7 @@ function ResultsPage() {
             className="h-14 w-full text-base font-bold"
             onClick={() => navigate({ to: "/complete/$id", params: { id: record.id } })}
           >
-            Continue
+            आगे बढ़ें
           </Button>
         </div>
       )}
