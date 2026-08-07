@@ -5,7 +5,10 @@ import {
   RECOMMENDATION_BY_ITEM,
   type ChecklistResult,
   type InspectionResult,
+  SEVERITY_BY_ITEM,
+  type BoundingBox,
   type ItemStatus,
+  type Severity,
 } from "./inspection";
 
 const Input = z.object({
@@ -34,11 +37,48 @@ Do NOT give any score, percentage, rating or marks.
 For every item that is not "correct", write a very short recommendation in simple words
 (max 8 words), for example "Name badge missing" or "Shirt is not tucked in".
 
+For every item that is not "correct" also return:
+- "severity": "critical" (safety/identity items like ID card, badges, damaged uniform),
+  "medium" (clearly visible uniform faults) or "minor" (small grooming or neatness faults).
+- "reason": one short sentence saying what you saw in the photo that made you flag it (max 15 words).
+- "box": the location of the problem ON THE GUARD PHOTO as a normalised bounding box
+  {"x":0.0-1.0,"y":0.0-1.0,"width":0.0-1.0,"height":0.0-1.0} where x,y is the TOP-LEFT
+  corner as a fraction of the photo width/height. For a missing item, box the place where
+  it should be. Omit "box" only if you truly cannot localise it.
+
 Respond with STRICT JSON only, no markdown, in this exact shape:
-{"checklist":[{"item":"Blue Cap","status":"correct","recommendation":""}]}
+{"checklist":[{"item":"Blue Cap","status":"correct","recommendation":"","severity":"minor","reason":"","box":{"x":0.4,"y":0.05,"width":0.2,"height":0.12}}]}
 Use the exact item names from the checklist above.`;
 
 const STATUSES: ItemStatus[] = ["correct", "needs_correction", "missing"];
+const SEVERITIES: Severity[] = ["critical", "medium", "minor"];
+
+const clamp01 = (n: number) => Math.min(1, Math.max(0, n));
+
+/** Keeps only well-formed, in-frame boxes so the overlay never renders garbage. */
+function normaliseBox(raw: unknown): BoundingBox | undefined {
+  if (!raw || typeof raw !== "object") return undefined;
+  const b = raw as Record<string, unknown>;
+  const nums = ["x", "y", "width", "height"].map((k) => Number(b[k]));
+  if (nums.some((n) => !Number.isFinite(n))) return undefined;
+  let [x, y, width, height] = nums as [number, number, number, number];
+  // Tolerate percentage-style (0-100) coordinates.
+  if (x > 1 || y > 1 || width > 1 || height > 1) {
+    x /= 100;
+    y /= 100;
+    width /= 100;
+    height /= 100;
+  }
+  if (width <= 0 || height <= 0) return undefined;
+  x = clamp01(x);
+  y = clamp01(y);
+  return {
+    x,
+    y,
+    width: clamp01(Math.min(width, 1 - x)),
+    height: clamp01(Math.min(height, 1 - y)),
+  };
+}
 
 export const inspectUniform = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => Input.parse(data))
@@ -89,7 +129,13 @@ export const inspectUniform = createServerFn({ method: "POST" })
       if (status === "correct") return { item: spec.item, status };
       const recommendation =
         (found?.recommendation ?? "").trim() || RECOMMENDATION_BY_ITEM[spec.item] || spec.fail;
-      return { item: spec.item, status, recommendation };
+      const severity: Severity =
+        found?.severity && SEVERITIES.includes(found.severity)
+          ? found.severity
+          : (SEVERITY_BY_ITEM[spec.item] ?? "medium");
+      const reason = (found?.reason ?? "").trim() || spec.fail;
+      const box = normaliseBox(found?.box);
+      return { item: spec.item, status, recommendation, severity, reason, ...(box ? { box } : {}) };
     });
 
     const recommendations = checklist
