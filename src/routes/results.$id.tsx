@@ -3,6 +3,7 @@ import { jsPDF } from "jspdf";
 import { Download, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { AnnotatedPhoto } from "@/components/AnnotatedPhoto";
+import { VoiceFeedback } from "@/components/VoiceFeedback";
 import { AppHeader } from "@/components/AppHeader";
 import { Button } from "@/components/ui/button";
 import { currentSession } from "@/lib/auth";
@@ -103,6 +104,7 @@ function ResultsPage() {
   const [record, setRecord] = useState<InspectionRecord | null>(null);
   const [isSupervisor, setIsSupervisor] = useState(false);
   const [ready, setReady] = useState(false);
+  const [highlight, setHighlight] = useState<string | null>(null);
 
   useEffect(() => {
     setIsSupervisor(currentSession()?.role === "supervisor");
@@ -151,6 +153,13 @@ function ResultsPage() {
           photo={record.guardPhoto}
           alt={`Uniform photo of ${record.guardName}`}
           result={result}
+          highlight={highlight}
+        />
+
+        <VoiceFeedback
+          guardName={record.guardName}
+          result={result}
+          onHighlight={setHighlight}
         />
 
         <section className="rounded-2xl bg-card p-5 text-center card-shadow">
