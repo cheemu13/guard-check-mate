@@ -131,7 +131,20 @@ export const inspectUniform = createServerFn({ method: "POST" })
     const match = raw.match(/\{[\s\S]*\}/);
     if (!match) throw new Error("Could not read the uniform check response.");
 
-    const parsed = JSON.parse(match[0]) as { checklist?: ChecklistResult[] };
+    const parsed = JSON.parse(match[0]) as {
+      front_view?: boolean;
+      message?: string;
+      checklist?: ChecklistResult[];
+    };
+
+    // Highest priority rule: no clear front view, no inspection.
+    if (parsed.front_view === false || !parsed.checklist?.length) {
+      throw new Error(
+        (parsed.message ?? "").trim() ||
+          "Please share a clear full front view photo, standing straight and facing the camera.",
+      );
+    }
+
     const byName = new Map((parsed.checklist ?? []).map((c) => [c.item, c]));
 
     const checklist: ChecklistResult[] = CHECKLIST_SPECS.map((spec) => {
