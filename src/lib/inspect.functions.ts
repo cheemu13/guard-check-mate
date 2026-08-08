@@ -25,6 +25,18 @@ You are given TWO images:
 1. The IDEAL UNIFORM REFERENCE image (how the uniform should look).
 2. The GUARD PHOTO to be checked.
 
+HIGHEST PRIORITY RULE — IMAGE VALIDATION FIRST. NO FRONT VIEW, NO INSPECTION.
+Before any uniform analysis, decide whether the GUARD PHOTO is a clear, full FRONT VIEW
+of one person: the person faces the camera, the face and torso are clearly visible and
+not blurred, and the body from cap to shoes is mostly in frame. Treat these as NOT a
+front view: back view, side/profile view, head turned away, close-up of only part of the
+body, heavily blurred or very dark photo, no person in the photo, or an object/screenshot.
+If it is NOT a clear front view, DO NOT analyse the uniform, DO NOT guess, and DO NOT
+return a checklist. Respond with STRICT JSON only:
+{"front_view":false,"message":"<polite request in simple words asking for a clear full front view photo, max 25 words>"}
+
+Only if it IS a clear front view, continue with the checklist below.
+
 Check the guard photo against this 13-point checklist:
 ${CRITERIA}
 
@@ -47,7 +59,7 @@ For every item that is not "correct" also return:
   it should be. Omit "box" only if you truly cannot localise it.
 
 Respond with STRICT JSON only, no markdown, in this exact shape:
-{"checklist":[{"item":"Blue Cap","status":"correct","recommendation":"","severity":"minor","reason":"","box":{"x":0.4,"y":0.05,"width":0.2,"height":0.12}}]}
+{"front_view":true,"checklist":[{"item":"Blue Cap","status":"correct","recommendation":"","severity":"minor","reason":"","box":{"x":0.4,"y":0.05,"width":0.2,"height":0.12}}]}
 Use the exact item names from the checklist above.`;
 
 const STATUSES: ItemStatus[] = ["correct", "needs_correction", "missing"];
@@ -119,7 +131,20 @@ export const inspectUniform = createServerFn({ method: "POST" })
     const match = raw.match(/\{[\s\S]*\}/);
     if (!match) throw new Error("Could not read the uniform check response.");
 
-    const parsed = JSON.parse(match[0]) as { checklist?: ChecklistResult[] };
+    const parsed = JSON.parse(match[0]) as {
+      front_view?: boolean;
+      message?: string;
+      checklist?: ChecklistResult[];
+    };
+
+    // Highest priority rule: no clear front view, no inspection.
+    if (parsed.front_view === false || !parsed.checklist?.length) {
+      throw new Error(
+        (parsed.message ?? "").trim() ||
+          "Please share a clear full front view photo, standing straight and facing the camera.",
+      );
+    }
+
     const byName = new Map((parsed.checklist ?? []).map((c) => [c.item, c]));
 
     const checklist: ChecklistResult[] = CHECKLIST_SPECS.map((spec) => {

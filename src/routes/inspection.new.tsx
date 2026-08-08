@@ -69,6 +69,7 @@ function NewInspection() {
   const [dateTime, setDateTime] = useState("");
   const [photo, setPhoto] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [photoIssue, setPhotoIssue] = useState<string | null>(null);
 
   useEffect(() => {
     const s = currentSession();
@@ -95,6 +96,7 @@ function NewInspection() {
     const file = e.target.files?.[0];
     if (!file) return;
     try {
+      setPhotoIssue(null);
       setPhoto(await toDataUrl(file));
     } catch {
       toast.error("Could not read that photo. Please try again.");
@@ -114,6 +116,7 @@ function NewInspection() {
       return;
     }
     setLoading(true);
+    setPhotoIssue(null);
     try {
       const referenceImage = await urlToDataUrl(idealUniform);
       const result = await inspect({ data: { guardPhoto: photo, referenceImage } });
@@ -139,7 +142,9 @@ function NewInspection() {
       }
       navigate({ to: "/results/$id", params: { id: record.id } });
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Check failed. Please try again.");
+      const message = err instanceof Error ? err.message : "Check failed. Please try again.";
+      setPhotoIssue(message);
+      toast.error(message);
     } finally {
       setLoading(false);
     }
@@ -186,6 +191,14 @@ function NewInspection() {
             className="hidden"
             onChange={onPick}
           />
+          {photoIssue ? (
+            <p
+              role="alert"
+              className="mt-4 rounded-xl border border-destructive/30 bg-destructive/10 p-3 text-sm font-semibold text-destructive"
+            >
+              {photoIssue}
+            </p>
+          ) : null}
           {photo ? (
             <>
               <img
