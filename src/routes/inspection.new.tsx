@@ -179,14 +179,6 @@ function NewInspection() {
             Stand straight, full body in the frame, front view.
           </p>
           <input
-            ref={cameraRef}
-            type="file"
-            accept="image/*"
-            capture="environment"
-            className="hidden"
-            onChange={onPick}
-          />
-          <input
             ref={galleryRef}
             type="file"
             accept="image/*"
