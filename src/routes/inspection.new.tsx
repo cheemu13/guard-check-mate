@@ -212,7 +212,7 @@ function NewInspection() {
                 <Button
                   variant="outline"
                   className="h-13 w-full font-bold"
-                  onClick={() => cameraRef.current?.click()}
+                  onClick={() => setCameraOpen(true)}
                 >
                   <RefreshCw className="mr-2 h-5 w-5" /> Retake
                 </Button>
@@ -229,7 +229,7 @@ function NewInspection() {
             <>
               <Button
                 className="mt-4 h-20 w-full text-base font-bold"
-                onClick={() => cameraRef.current?.click()}
+                onClick={() => setCameraOpen(true)}
               >
                 <Camera className="mr-2 h-6 w-6" /> Open Camera
               </Button>
