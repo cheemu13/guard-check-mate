@@ -220,6 +220,9 @@ export interface InspectionRecord {
   submitted: boolean;
 }
 
+/** How many inspections are kept on the device; older ones are pruned. */
+export const MAX_STORED_INSPECTIONS = 15;
+
 /** Newest first. */
 export async function loadInspections(): Promise<InspectionRecord[]> {
   const all = await allRecords<InspectionRecord>();
@@ -229,7 +232,17 @@ export async function loadInspections(): Promise<InspectionRecord[]> {
 /** Rejects if the record could not be stored — do not treat this as fire-and-forget. */
 export async function saveInspection(record: InspectionRecord): Promise<void> {
   await putRecord(record);
+  // Keep the newest MAX_STORED_INSPECTIONS complete records; drop only older ones.
+  try {
+    const all = await loadInspections();
+    for (const old of all.slice(MAX_STORED_INSPECTIONS)) {
+      await removeRecord(old.id);
+    }
+  } catch (err) {
+    console.error("Could not prune old inspections", err);
+  }
 }
+
 
 export async function getInspection(id: string): Promise<InspectionRecord | undefined> {
   return getRecord<InspectionRecord>(id);

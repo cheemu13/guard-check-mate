@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Download } from "lucide-react";
+import { Download, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { AppHeader } from "@/components/AppHeader";
 import { Button } from "@/components/ui/button";
@@ -30,6 +30,7 @@ export const Route = createFileRoute("/reports")({
 function ReportsPage() {
   const navigate = useNavigate();
   const [records, setRecords] = useState<InspectionRecord[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const s = currentSession();
@@ -38,9 +39,14 @@ function ReportsPage() {
       return;
     }
     let active = true;
-    loadInspections().then((all) => {
-      if (active) setRecords(all);
-    });
+    setLoading(true);
+    loadInspections()
+      .then((all) => {
+        if (active) setRecords(all);
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
     return () => {
       active = false;
     };
@@ -52,6 +58,32 @@ function ReportsPage() {
   );
   const common = [...counts.entries()].sort((a, b) => b[1] - a[1]);
   const clean = records.filter((r) => issuesOf(r.result).length === 0).length;
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background pb-12">
+        <AppHeader title="Reports" back />
+        <div className="flex items-center justify-center gap-3 px-4 pt-16 text-muted-foreground">
+          <Loader2 className="h-5 w-5 animate-spin" />
+          <p className="text-sm">Loading reports…</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (records.length === 0) {
+    return (
+      <div className="min-h-screen bg-background pb-12">
+        <AppHeader title="Reports" back />
+        <div className="px-4 pt-5">
+          <div className="rounded-2xl bg-card p-8 text-center card-shadow">
+            <p className="text-sm text-muted-foreground">No inspections yet.</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
 
   return (
     <div className="min-h-screen bg-background pb-12">

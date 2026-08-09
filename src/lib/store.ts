@@ -26,8 +26,19 @@ function supported(): boolean {
 
 let dbPromise: Promise<IDBDatabase> | undefined;
 
+/** Ask the browser not to evict saved inspections under storage pressure. */
+function requestPersistence(): void {
+  try {
+    void navigator.storage?.persist?.();
+  } catch {
+    /* not supported — records still persist normally */
+  }
+}
+
 function openDb(): Promise<IDBDatabase> {
   if (!dbPromise) {
+    requestPersistence();
+
     dbPromise = new Promise<IDBDatabase>((resolve, reject) => {
       const req = indexedDB.open(DB_NAME, DB_VERSION);
       req.onupgradeneeded = () => {
