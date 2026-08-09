@@ -125,17 +125,6 @@ function LoginPage() {
                 maxLength={6}
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="name">Your Name (optional)</Label>
-              <Input
-                id="name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="e.g. Ramesh Kumar"
-                className="h-14 text-base"
-                maxLength={60}
-              />
-            </div>
           </>
         ) : (
           <>
