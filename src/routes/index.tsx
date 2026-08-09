@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { HardHat, ShieldCheck } from "lucide-react";
+import { ShieldCheck } from "lucide-react";
 import { IciciLogo } from "@/components/IciciLogo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -33,7 +33,6 @@ function LoginPage() {
   const [role, setRole] = useState<Role>("guard");
   const [empId, setEmpId] = useState("");
   const [pin, setPin] = useState("");
-  const [name, setName] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -55,7 +54,7 @@ function LoginPage() {
       login({
         role: "guard",
         id: empId.trim().toUpperCase(),
-        name: name.trim() || empId.trim().toUpperCase(),
+        name: empId.trim().toUpperCase(),
       });
       navigate({ to: "/inspection/new" });
       return;
@@ -70,26 +69,34 @@ function LoginPage() {
 
   return (
     <main className="flex min-h-screen flex-col bg-background px-6 pb-10 pt-10">
-      <IciciLogo className="self-start" />
+      <div className="flex items-start justify-between gap-3">
+        <IciciLogo className="self-start" />
+        <button
+          type="button"
+          aria-label={role === "supervisor" ? "Back to guard login" : "Supervisor access"}
+          aria-pressed={role === "supervisor"}
+          onClick={() => {
+            setError("");
+            setRole(role === "supervisor" ? "guard" : "supervisor");
+          }}
+          className={`grid h-10 w-10 shrink-0 place-items-center rounded-full border transition-colors ${
+            role === "supervisor"
+              ? "border-primary bg-primary/10 text-primary"
+              : "border-border bg-card text-muted-foreground"
+          }`}
+        >
+          <ShieldCheck className="h-5 w-5" />
+        </button>
+      </div>
       <div className="mt-8">
-        <h1 className="text-2xl font-black text-foreground">Daily Uniform Check</h1>
-        <p className="mt-1 text-sm text-muted-foreground">Sign in to start your check.</p>
+        <h1 className="text-2xl font-black text-foreground">
+          {role === "guard" ? "Daily Uniform Check" : "Supervisor Sign In"}
+        </h1>
+        <p className="mt-1 text-sm text-muted-foreground">
+          {role === "guard" ? "Sign in to start your check." : "View inspections, history and reports."}
+        </p>
       </div>
 
-      <div className="mt-6 grid grid-cols-2 gap-3">
-        <RoleButton
-          active={role === "guard"}
-          onClick={() => setRole("guard")}
-          icon={<HardHat className="h-5 w-5" />}
-          label="Security Guard"
-        />
-        <RoleButton
-          active={role === "supervisor"}
-          onClick={() => setRole("supervisor")}
-          icon={<ShieldCheck className="h-5 w-5" />}
-          label="Supervisor"
-        />
-      </div>
 
       <form onSubmit={onSubmit} className="mt-7 space-y-5">
         {role === "guard" ? (
@@ -116,17 +123,6 @@ function LoginPage() {
                 placeholder="••••"
                 className="h-14 text-base tracking-widest"
                 maxLength={6}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="name">Your Name (optional)</Label>
-              <Input
-                id="name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="e.g. Ramesh Kumar"
-                className="h-14 text-base"
-                maxLength={60}
               />
             </div>
           </>
@@ -173,30 +169,3 @@ function LoginPage() {
   );
 }
 
-function RoleButton({
-  active,
-  onClick,
-  icon,
-  label,
-}: {
-  active: boolean;
-  onClick: () => void;
-  icon: React.ReactNode;
-  label: string;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-pressed={active}
-      className={`flex min-h-16 flex-col items-center justify-center gap-1 rounded-2xl border-2 px-3 py-3 text-sm font-bold transition-colors ${
-        active
-          ? "border-primary bg-primary/10 text-primary"
-          : "border-border bg-card text-muted-foreground"
-      }`}
-    >
-      {icon}
-      {label}
-    </button>
-  );
-}

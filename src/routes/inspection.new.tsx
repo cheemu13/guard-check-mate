@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import idealUniform from "@/assets/ideal-uniform-reference.jpg";
 import { AppHeader } from "@/components/AppHeader";
 import { Guard360 } from "@/components/Guard360";
+import { LiveCameraCapture } from "@/components/LiveCameraCapture";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -59,7 +60,6 @@ async function urlToDataUrl(url: string): Promise<string> {
 function NewInspection() {
   const navigate = useNavigate();
   const inspect = useServerFn(inspectUniform);
-  const cameraRef = useRef<HTMLInputElement>(null);
   const galleryRef = useRef<HTMLInputElement>(null);
   const opened = useRef(false);
 
@@ -70,6 +70,7 @@ function NewInspection() {
   const [photo, setPhoto] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [photoIssue, setPhotoIssue] = useState<string | null>(null);
+  const [cameraOpen, setCameraOpen] = useState(false);
 
   useEffect(() => {
     const s = currentSession();
@@ -88,7 +89,7 @@ function NewInspection() {
     // Open the camera straight away so the guard can start immediately.
     if (!opened.current) {
       opened.current = true;
-      window.setTimeout(() => cameraRef.current?.click(), 350);
+      window.setTimeout(() => setCameraOpen(true), 350);
     }
   }, [navigate]);
 
@@ -152,6 +153,16 @@ function NewInspection() {
 
   return (
     <div className="min-h-screen bg-background pb-32">
+      {cameraOpen ? (
+        <LiveCameraCapture
+          onCapture={(dataUrl) => {
+            setPhotoIssue(null);
+            setPhoto(dataUrl);
+            setCameraOpen(false);
+          }}
+          onClose={() => setCameraOpen(false)}
+        />
+      ) : null}
       <AppHeader
         title="Today's Inspection"
         subtitle={guardName ? `${guardName} · ${guardId}` : undefined}
@@ -176,14 +187,6 @@ function NewInspection() {
           <p className="mt-1 text-sm text-muted-foreground">
             Stand straight, full body in the frame, front view.
           </p>
-          <input
-            ref={cameraRef}
-            type="file"
-            accept="image/*"
-            capture="environment"
-            className="hidden"
-            onChange={onPick}
-          />
           <input
             ref={galleryRef}
             type="file"
@@ -210,7 +213,7 @@ function NewInspection() {
                 <Button
                   variant="outline"
                   className="h-13 w-full font-bold"
-                  onClick={() => cameraRef.current?.click()}
+                  onClick={() => setCameraOpen(true)}
                 >
                   <RefreshCw className="mr-2 h-5 w-5" /> Retake
                 </Button>
@@ -227,7 +230,7 @@ function NewInspection() {
             <>
               <Button
                 className="mt-4 h-20 w-full text-base font-bold"
-                onClick={() => cameraRef.current?.click()}
+                onClick={() => setCameraOpen(true)}
               >
                 <Camera className="mr-2 h-6 w-6" /> Open Camera
               </Button>
