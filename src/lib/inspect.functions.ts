@@ -175,8 +175,11 @@ export const inspectUniform = createServerFn({ method: "POST" })
       .filter(Boolean);
 
     return {
-      overall: recommendations.length === 0 ? "all_correct" : "action_needed",
-      checklist,
-      recommendations,
+      ok: true,
+      result: {
+        overall: recommendations.length === 0 ? "all_correct" : "action_needed",
+        checklist,
+        recommendations,
+      },
     };
   });
