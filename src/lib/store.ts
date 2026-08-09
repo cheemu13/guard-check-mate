@@ -36,8 +36,9 @@ function requestPersistence(): void {
 }
 
 function openDb(): Promise<IDBDatabase> {
-
   if (!dbPromise) {
+    requestPersistence();
+
     dbPromise = new Promise<IDBDatabase>((resolve, reject) => {
       const req = indexedDB.open(DB_NAME, DB_VERSION);
       req.onupgradeneeded = () => {
