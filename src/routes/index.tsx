@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { HardHat, ShieldCheck } from "lucide-react";
+import { ShieldCheck } from "lucide-react";
 import { IciciLogo } from "@/components/IciciLogo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -169,30 +169,3 @@ function LoginPage() {
   );
 }
 
-function RoleButton({
-  active,
-  onClick,
-  icon,
-  label,
-}: {
-  active: boolean;
-  onClick: () => void;
-  icon: React.ReactNode;
-  label: string;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-pressed={active}
-      className={`flex min-h-16 flex-col items-center justify-center gap-1 rounded-2xl border-2 px-3 py-3 text-sm font-bold transition-colors ${
-        active
-          ? "border-primary bg-primary/10 text-primary"
-          : "border-border bg-card text-muted-foreground"
-      }`}
-    >
-      {icon}
-      {label}
-    </button>
-  );
-}
