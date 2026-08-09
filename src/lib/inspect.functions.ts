@@ -92,9 +92,13 @@ function normaliseBox(raw: unknown): BoundingBox | undefined {
   };
 }
 
+export type InspectResponse =
+  | { ok: true; result: InspectionResult }
+  | { ok: false; message: string };
+
 export const inspectUniform = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => Input.parse(data))
-  .handler(async ({ data }): Promise<InspectionResult> => {
+  .handler(async ({ data }): Promise<InspectResponse> => {
     const key = process.env["LOVABLE_API_KEY"];
     if (!key) throw new Error("Uniform check is not configured on this device.");
 
@@ -139,10 +143,12 @@ export const inspectUniform = createServerFn({ method: "POST" })
 
     // Highest priority rule: no clear front view, no inspection.
     if (parsed.front_view === false || !parsed.checklist?.length) {
-      throw new Error(
-        (parsed.message ?? "").trim() ||
+      return {
+        ok: false,
+        message:
+          (parsed.message ?? "").trim() ||
           "Please share a clear full front view photo, standing straight and facing the camera.",
-      );
+      };
     }
 
     const byName = new Map((parsed.checklist ?? []).map((c) => [c.item, c]));
@@ -169,8 +175,11 @@ export const inspectUniform = createServerFn({ method: "POST" })
       .filter(Boolean);
 
     return {
-      overall: recommendations.length === 0 ? "all_correct" : "action_needed",
-      checklist,
-      recommendations,
+      ok: true,
+      result: {
+        overall: recommendations.length === 0 ? "all_correct" : "action_needed",
+        checklist,
+        recommendations,
+      },
     };
   });

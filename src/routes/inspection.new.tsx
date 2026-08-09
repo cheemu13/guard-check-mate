@@ -120,7 +120,12 @@ function NewInspection() {
     setPhotoIssue(null);
     try {
       const referenceImage = await urlToDataUrl(idealUniform);
-      const result = await inspect({ data: { guardPhoto: photo, referenceImage } });
+      const response = await inspect({ data: { guardPhoto: photo, referenceImage } });
+      if (!response.ok) {
+        setPhotoIssue(response.message);
+        toast.error(response.message);
+        return;
+      }
       const record: InspectionRecord = {
         id: crypto.randomUUID(),
         branchName: branchName.trim() || "—",
@@ -128,7 +133,7 @@ function NewInspection() {
         guardId: guardId.trim(),
         dateTime,
         guardPhoto: photo,
-        result,
+        result: response.result,
         comments: "",
         submitted: false,
       };
