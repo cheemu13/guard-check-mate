@@ -92,9 +92,13 @@ function normaliseBox(raw: unknown): BoundingBox | undefined {
   };
 }
 
+export type InspectResponse =
+  | { ok: true; result: InspectionResult }
+  | { ok: false; message: string };
+
 export const inspectUniform = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => Input.parse(data))
-  .handler(async ({ data }): Promise<InspectionResult> => {
+  .handler(async ({ data }): Promise<InspectResponse> => {
     const key = process.env["LOVABLE_API_KEY"];
     if (!key) throw new Error("Uniform check is not configured on this device.");
 
