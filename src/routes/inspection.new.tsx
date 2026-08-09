@@ -153,6 +153,16 @@ function NewInspection() {
 
   return (
     <div className="min-h-screen bg-background pb-32">
+      {cameraOpen ? (
+        <LiveCameraCapture
+          onCapture={(dataUrl) => {
+            setPhotoIssue(null);
+            setPhoto(dataUrl);
+            setCameraOpen(false);
+          }}
+          onClose={() => setCameraOpen(false)}
+        />
+      ) : null}
       <AppHeader
         title="Today's Inspection"
         subtitle={guardName ? `${guardName} · ${guardId}` : undefined}
