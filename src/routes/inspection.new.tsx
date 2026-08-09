@@ -71,6 +71,7 @@ function NewInspection() {
   const [photo, setPhoto] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [photoIssue, setPhotoIssue] = useState<string | null>(null);
+  const [cameraOpen, setCameraOpen] = useState(false);
 
   useEffect(() => {
     const s = currentSession();
@@ -89,7 +90,7 @@ function NewInspection() {
     // Open the camera straight away so the guard can start immediately.
     if (!opened.current) {
       opened.current = true;
-      window.setTimeout(() => cameraRef.current?.click(), 350);
+      window.setTimeout(() => setCameraOpen(true), 350);
     }
   }, [navigate]);
 
