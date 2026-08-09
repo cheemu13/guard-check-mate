@@ -143,10 +143,12 @@ export const inspectUniform = createServerFn({ method: "POST" })
 
     // Highest priority rule: no clear front view, no inspection.
     if (parsed.front_view === false || !parsed.checklist?.length) {
-      throw new Error(
-        (parsed.message ?? "").trim() ||
+      return {
+        ok: false,
+        message:
+          (parsed.message ?? "").trim() ||
           "Please share a clear full front view photo, standing straight and facing the camera.",
-      );
+      };
     }
 
     const byName = new Map((parsed.checklist ?? []).map((c) => [c.item, c]));
