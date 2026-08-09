@@ -60,7 +60,6 @@ async function urlToDataUrl(url: string): Promise<string> {
 function NewInspection() {
   const navigate = useNavigate();
   const inspect = useServerFn(inspectUniform);
-  const cameraRef = useRef<HTMLInputElement>(null);
   const galleryRef = useRef<HTMLInputElement>(null);
   const opened = useRef(false);
 
