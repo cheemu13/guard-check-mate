@@ -207,48 +207,29 @@ export function LiveCameraCapture({
     <div className="fixed inset-0 z-50 bg-black">
       <video ref={videoRef} playsInline muted className="h-full w-full object-cover" />
 
-      {/* Silhouette + frame overlay */}
-      <div className="pointer-events-none absolute inset-0">
-        <svg viewBox="0 0 100 160" preserveAspectRatio="none" className="h-full w-full">
-          <rect
-            x="8"
-            y="8"
-            width="84"
-            height="144"
-            rx="6"
-            fill="none"
-            strokeWidth="1.2"
-            className={`transition-[stroke] duration-300 ${ok ? "stroke-[hsl(142_72%_45%)]" : "stroke-[hsl(0_84%_60%)]"}`}
-          />
-        </svg>
+      {/* Face oval guide */}
+      <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-6">
+        <p className="rounded-full bg-black/45 px-4 py-2 text-center text-sm font-semibold text-white backdrop-blur">
+          Align your face within the oval.
+        </p>
         <svg
-          viewBox="0 0 100 220"
-          className={`absolute left-1/2 top-1/2 h-[78%] -translate-x-1/2 -translate-y-1/2 transition-opacity duration-500 ${
-            ok ? "opacity-40" : "opacity-70"
-          }`}
+          viewBox="0 0 200 260"
+          className="h-[52%] max-h-[62vh] w-auto transition-opacity duration-500"
+          style={{ filter: "drop-shadow(0 0 12px rgba(255,255,255,0.55))" }}
         >
-          <g
+          <path
+            d="M100 8 C142 8 168 52 168 108 C168 178 138 252 100 252 C62 252 32 178 32 108 C32 52 58 8 100 8 Z"
             fill="none"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className={ok ? "stroke-[hsl(142_72%_55%)]" : "stroke-white/80"}
-          >
-            <circle cx="50" cy="22" r="15" />
-            <path d="M50 37 L50 120" />
-            <path d="M50 48 L22 78 M50 48 L78 78" />
-            <path d="M28 60 Q50 44 72 60 L74 118 Q50 126 26 118 Z" />
-            <path d="M38 120 L34 200 M62 120 L66 200" />
-            <path d="M34 200 L24 208 M66 200 L76 208" />
-          </g>
+            strokeWidth="2"
+            className={`transition-[stroke] duration-300 ${
+              ok ? "stroke-[hsl(142_72%_60%)]" : "stroke-white/60"
+            }`}
+          />
         </svg>
       </div>
 
       {/* Top bar */}
-      <div className="absolute inset-x-0 top-0 flex items-start justify-between p-4 pt-[calc(1rem+env(safe-area-inset-top))]">
-        <p className="max-w-[75%] rounded-full bg-black/55 px-4 py-2 text-sm font-semibold text-white backdrop-blur">
-          Position the security guard inside the frame.
-        </p>
+      <div className="absolute inset-x-0 top-0 flex items-start justify-end p-4 pt-[calc(1rem+env(safe-area-inset-top))]">
         <button
           aria-label="Close camera"
           onClick={onClose}
@@ -257,6 +238,7 @@ export function LiveCameraCapture({
           <X className="h-5 w-5" />
         </button>
       </div>
+
 
       {/* Status + capture */}
       <div className="absolute inset-x-0 bottom-0 flex flex-col items-center gap-4 px-6 pb-[calc(1.75rem+env(safe-area-inset-bottom))]">
