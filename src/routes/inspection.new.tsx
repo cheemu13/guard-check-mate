@@ -340,7 +340,10 @@ function NewInspection() {
           <p className="mt-2 text-center text-sm text-muted-foreground">
             {!photo
               ? "Take your uniform photo in Step 1 to continue."
-              : "Fill in your branch and name in Step 2 to continue."}
+              : photoBlocked
+                ? FULL_BODY_MESSAGE
+                : "Fill in your branch and name in Step 2 to continue."}
+
           </p>
         ) : null}
       </div>
