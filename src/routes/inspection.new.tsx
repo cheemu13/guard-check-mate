@@ -5,8 +5,9 @@ import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import idealUniform from "@/assets/ideal-uniform-reference.jpg";
 import { AppHeader } from "@/components/AppHeader";
+import { BodySilhouetteGuide } from "@/components/BodySilhouetteGuide";
 import { Guard360 } from "@/components/Guard360";
-import { LiveCameraCapture } from "@/components/LiveCameraCapture";
+
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
