@@ -107,7 +107,7 @@ function NewInspection() {
 
 
   const detailsFilled = branchName.trim() !== "" && guardName.trim() !== "";
-  const canCheck = detailsFilled && photo !== null;
+  const canCheck = detailsFilled && photo !== null && !photoBlocked;
 
   async function run() {
     if (!photo) {
@@ -124,10 +124,13 @@ function NewInspection() {
       const referenceImage = await urlToDataUrl(idealUniform);
       const response = await inspect({ data: { guardPhoto: photo, referenceImage } });
       if (!response.ok) {
-        setPhotoIssue(response.message);
-        toast.error(response.message);
+        // Full body / front view not confirmed → submission stays blocked.
+        setPhotoBlocked(true);
+        setPhotoIssue(FULL_BODY_MESSAGE);
+        toast.error(FULL_BODY_MESSAGE);
         return;
       }
+
       const record: InspectionRecord = {
         id: crypto.randomUUID(),
         branchName: branchName.trim() || "—",
