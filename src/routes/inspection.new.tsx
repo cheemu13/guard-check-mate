@@ -5,8 +5,9 @@ import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import idealUniform from "@/assets/ideal-uniform-reference.jpg";
 import { AppHeader } from "@/components/AppHeader";
+import { BodySilhouetteGuide } from "@/components/BodySilhouetteGuide";
 import { Guard360 } from "@/components/Guard360";
-import { LiveCameraCapture } from "@/components/LiveCameraCapture";
+
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -57,11 +58,14 @@ async function urlToDataUrl(url: string): Promise<string> {
   });
 }
 
+const FULL_BODY_MESSAGE =
+  "Please capture a clear front-facing full-body photo; ensure the entire body from head to toe is visible.";
+
 function NewInspection() {
   const navigate = useNavigate();
   const inspect = useServerFn(inspectUniform);
   const galleryRef = useRef<HTMLInputElement>(null);
-  const opened = useRef(false);
+  const cameraRef = useRef<HTMLInputElement>(null);
 
   const [branchName, setBranchName] = useState("");
   const [guardName, setGuardName] = useState("");
@@ -70,7 +74,7 @@ function NewInspection() {
   const [photo, setPhoto] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [photoIssue, setPhotoIssue] = useState<string | null>(null);
-  const [cameraOpen, setCameraOpen] = useState(false);
+  const [photoBlocked, setPhotoBlocked] = useState(false);
 
   useEffect(() => {
     const s = currentSession();
@@ -86,26 +90,24 @@ function NewInspection() {
     setGuardId(s.id);
     setBranchName(window.localStorage.getItem(BRANCH_KEY) ?? "");
     setDateTime(new Date().toISOString());
-    // Open the camera straight away so the guard can start immediately.
-    if (!opened.current) {
-      opened.current = true;
-      window.setTimeout(() => setCameraOpen(true), 350);
-    }
   }, [navigate]);
 
   async function onPick(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
+    e.target.value = "";
     if (!file) return;
     try {
       setPhotoIssue(null);
+      setPhotoBlocked(false);
       setPhoto(await toDataUrl(file));
     } catch {
       toast.error("Could not read that photo. Please try again.");
     }
   }
 
+
   const detailsFilled = branchName.trim() !== "" && guardName.trim() !== "";
-  const canCheck = detailsFilled && photo !== null;
+  const canCheck = detailsFilled && photo !== null && !photoBlocked;
 
   async function run() {
     if (!photo) {
@@ -122,10 +124,13 @@ function NewInspection() {
       const referenceImage = await urlToDataUrl(idealUniform);
       const response = await inspect({ data: { guardPhoto: photo, referenceImage } });
       if (!response.ok) {
-        setPhotoIssue(response.message);
-        toast.error(response.message);
+        // Full body / front view not confirmed → submission stays blocked.
+        setPhotoBlocked(true);
+        setPhotoIssue(FULL_BODY_MESSAGE);
+        toast.error(FULL_BODY_MESSAGE);
         return;
       }
+
       const record: InspectionRecord = {
         id: crypto.randomUUID(),
         branchName: branchName.trim() || "—",
@@ -158,16 +163,6 @@ function NewInspection() {
 
   return (
     <div className="min-h-screen bg-background pb-32">
-      {cameraOpen ? (
-        <LiveCameraCapture
-          onCapture={(dataUrl) => {
-            setPhotoIssue(null);
-            setPhoto(dataUrl);
-            setCameraOpen(false);
-          }}
-          onClose={() => setCameraOpen(false)}
-        />
-      ) : null}
       <AppHeader
         title="Today's Inspection"
         subtitle={guardName ? `${guardName} · ${guardId}` : undefined}
@@ -192,6 +187,14 @@ function NewInspection() {
           <p className="mt-1 text-sm text-muted-foreground">
             Stand straight, full body in the frame, front view.
           </p>
+          <input
+            ref={cameraRef}
+            type="file"
+            accept="image/*"
+            capture="environment"
+            className="hidden"
+            onChange={onPick}
+          />
           <input
             ref={galleryRef}
             type="file"
@@ -218,24 +221,25 @@ function NewInspection() {
                 <Button
                   variant="outline"
                   className="h-13 w-full font-bold"
-                  onClick={() => setCameraOpen(true)}
+                  onClick={() => cameraRef.current?.click()}
                 >
-                  <RefreshCw className="mr-2 h-5 w-5" /> Retake
+                  <RefreshCw className="mr-2 h-5 w-5" /> Retake Photo
                 </Button>
                 <Button
                   variant="outline"
                   className="h-13 w-full font-bold"
                   onClick={() => galleryRef.current?.click()}
                 >
-                  <ImageIcon className="mr-2 h-5 w-5" /> Gallery
+                  <ImageIcon className="mr-2 h-5 w-5" /> Use Another Photo
                 </Button>
               </div>
             </>
           ) : (
             <>
+              <BodySilhouetteGuide className="mt-4" />
               <Button
                 className="mt-4 h-20 w-full text-base font-bold"
-                onClick={() => setCameraOpen(true)}
+                onClick={() => cameraRef.current?.click()}
               >
                 <Camera className="mr-2 h-6 w-6" /> Open Camera
               </Button>
@@ -249,6 +253,7 @@ function NewInspection() {
             </>
           )}
         </section>
+
 
         <section className="space-y-4 rounded-2xl bg-card p-5 card-shadow">
           <p className="text-base font-bold text-foreground">Step 2 · Your details</p>
@@ -335,7 +340,10 @@ function NewInspection() {
           <p className="mt-2 text-center text-sm text-muted-foreground">
             {!photo
               ? "Take your uniform photo in Step 1 to continue."
-              : "Fill in your branch and name in Step 2 to continue."}
+              : photoBlocked
+                ? FULL_BODY_MESSAGE
+                : "Fill in your branch and name in Step 2 to continue."}
+
           </p>
         ) : null}
       </div>
