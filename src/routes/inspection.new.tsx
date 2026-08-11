@@ -58,11 +58,14 @@ async function urlToDataUrl(url: string): Promise<string> {
   });
 }
 
+const FULL_BODY_MESSAGE =
+  "Please capture a clear front-facing full-body photo; ensure the entire body from head to toe is visible.";
+
 function NewInspection() {
   const navigate = useNavigate();
   const inspect = useServerFn(inspectUniform);
   const galleryRef = useRef<HTMLInputElement>(null);
-  const opened = useRef(false);
+  const cameraRef = useRef<HTMLInputElement>(null);
 
   const [branchName, setBranchName] = useState("");
   const [guardName, setGuardName] = useState("");
@@ -71,7 +74,7 @@ function NewInspection() {
   const [photo, setPhoto] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [photoIssue, setPhotoIssue] = useState<string | null>(null);
-  const [cameraOpen, setCameraOpen] = useState(false);
+  const [photoBlocked, setPhotoBlocked] = useState(false);
 
   useEffect(() => {
     const s = currentSession();
@@ -87,23 +90,21 @@ function NewInspection() {
     setGuardId(s.id);
     setBranchName(window.localStorage.getItem(BRANCH_KEY) ?? "");
     setDateTime(new Date().toISOString());
-    // Open the camera straight away so the guard can start immediately.
-    if (!opened.current) {
-      opened.current = true;
-      window.setTimeout(() => setCameraOpen(true), 350);
-    }
   }, [navigate]);
 
   async function onPick(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
+    e.target.value = "";
     if (!file) return;
     try {
       setPhotoIssue(null);
+      setPhotoBlocked(false);
       setPhoto(await toDataUrl(file));
     } catch {
       toast.error("Could not read that photo. Please try again.");
     }
   }
+
 
   const detailsFilled = branchName.trim() !== "" && guardName.trim() !== "";
   const canCheck = detailsFilled && photo !== null;
