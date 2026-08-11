@@ -163,16 +163,6 @@ function NewInspection() {
 
   return (
     <div className="min-h-screen bg-background pb-32">
-      {cameraOpen ? (
-        <LiveCameraCapture
-          onCapture={(dataUrl) => {
-            setPhotoIssue(null);
-            setPhoto(dataUrl);
-            setCameraOpen(false);
-          }}
-          onClose={() => setCameraOpen(false)}
-        />
-      ) : null}
       <AppHeader
         title="Today's Inspection"
         subtitle={guardName ? `${guardName} · ${guardId}` : undefined}
@@ -197,6 +187,14 @@ function NewInspection() {
           <p className="mt-1 text-sm text-muted-foreground">
             Stand straight, full body in the frame, front view.
           </p>
+          <input
+            ref={cameraRef}
+            type="file"
+            accept="image/*"
+            capture="environment"
+            className="hidden"
+            onChange={onPick}
+          />
           <input
             ref={galleryRef}
             type="file"
@@ -223,24 +221,25 @@ function NewInspection() {
                 <Button
                   variant="outline"
                   className="h-13 w-full font-bold"
-                  onClick={() => setCameraOpen(true)}
+                  onClick={() => cameraRef.current?.click()}
                 >
-                  <RefreshCw className="mr-2 h-5 w-5" /> Retake
+                  <RefreshCw className="mr-2 h-5 w-5" /> Retake Photo
                 </Button>
                 <Button
                   variant="outline"
                   className="h-13 w-full font-bold"
                   onClick={() => galleryRef.current?.click()}
                 >
-                  <ImageIcon className="mr-2 h-5 w-5" /> Gallery
+                  <ImageIcon className="mr-2 h-5 w-5" /> Use Another Photo
                 </Button>
               </div>
             </>
           ) : (
             <>
+              <BodySilhouetteGuide className="mt-4" />
               <Button
                 className="mt-4 h-20 w-full text-base font-bold"
-                onClick={() => setCameraOpen(true)}
+                onClick={() => cameraRef.current?.click()}
               >
                 <Camera className="mr-2 h-6 w-6" /> Open Camera
               </Button>
@@ -254,6 +253,7 @@ function NewInspection() {
             </>
           )}
         </section>
+
 
         <section className="space-y-4 rounded-2xl bg-card p-5 card-shadow">
           <p className="text-base font-bold text-foreground">Step 2 · Your details</p>
