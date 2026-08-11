@@ -5,7 +5,7 @@ type CheckKey = "presence" | "fullbody" | "distance" | "facing" | "light" | "ste
 
 const MESSAGES: Record<CheckKey, string> = {
   presence: "Step into the frame",
-  fullbody: "Show full body — head to toe",
+  fullbody: "Move back — show full body, head to toe",
   distance: "Move back",
   facing: "Face the camera",
   light: "Improve lighting",
