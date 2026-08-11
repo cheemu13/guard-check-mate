@@ -5,7 +5,7 @@ type CheckKey = "presence" | "fullbody" | "distance" | "facing" | "light" | "ste
 
 const MESSAGES: Record<CheckKey, string> = {
   presence: "Step into the frame",
-  fullbody: "Show full body — head to toe",
+  fullbody: "Move back — show full body, head to toe",
   distance: "Move back",
   facing: "Face the camera",
   light: "Improve lighting",
@@ -207,29 +207,11 @@ export function LiveCameraCapture({
     <div className="fixed inset-0 z-50 bg-black">
       <video ref={videoRef} playsInline muted className="h-full w-full object-cover" />
 
-      {/* Face oval guide */}
-      <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-6">
-        <p className="rounded-full bg-black/45 px-4 py-2 text-center text-sm font-semibold text-white backdrop-blur">
-          Align your face within the oval.
-        </p>
-        <svg
-          viewBox="0 0 200 260"
-          className="h-[52%] max-h-[62vh] w-auto transition-opacity duration-500"
-          style={{ filter: "drop-shadow(0 0 12px rgba(255,255,255,0.55))" }}
-        >
-          <path
-            d="M100 8 C142 8 168 52 168 108 C168 178 138 252 100 252 C62 252 32 178 32 108 C32 52 58 8 100 8 Z"
-            fill="none"
-            strokeWidth="2"
-            className={`transition-[stroke] duration-300 ${
-              ok ? "stroke-[hsl(142_72%_60%)]" : "stroke-white/60"
-            }`}
-          />
-        </svg>
-      </div>
-
       {/* Top bar */}
-      <div className="absolute inset-x-0 top-0 flex items-start justify-end p-4 pt-[calc(1rem+env(safe-area-inset-top))]">
+      <div className="absolute inset-x-0 top-0 flex items-start justify-between gap-3 p-4 pt-[calc(1rem+env(safe-area-inset-top))]">
+        <p className="rounded-full bg-black/45 px-4 py-2 text-sm font-semibold text-white backdrop-blur">
+          Stand back so your full body is visible, head to toe.
+        </p>
         <button
           aria-label="Close camera"
           onClick={onClose}
