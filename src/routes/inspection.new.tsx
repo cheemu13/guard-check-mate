@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { Camera, ImageIcon, Loader2, LogOut, RefreshCw } from "lucide-react";
+import { Camera, Check, ImageIcon, Loader2, LogOut, RefreshCw } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import idealUniform from "@/assets/ideal-uniform-reference.jpg";
@@ -215,44 +215,46 @@ function NewInspection() {
               <img
                 src={photo}
                 alt="Your uniform photo"
-                className="mt-4 aspect-3/4 w-full rounded-xl border border-border object-cover"
+                className="mt-4 aspect-3/4 w-full rounded-2xl border border-border object-cover"
               />
-          <div className="mt-3 grid grid-cols-2 gap-3">
-            <Button
-              variant="outline"
-              className="h-13 w-full gap-2 rounded-xl px-3 text-sm font-semibold sm:text-base"
-              onClick={() => cameraRef.current?.click()}
-            >
-              <RefreshCw className="h-5 w-5 shrink-0" />
-              <span className="truncate">Retake</span>
-            </Button>
-            <Button
-              variant="outline"
-              className="h-13 w-full gap-2 rounded-xl px-3 text-sm font-semibold sm:text-base"
-              onClick={() => galleryRef.current?.click()}
-            >
-              <ImageIcon className="h-5 w-5 shrink-0" />
-              <span className="truncate">Gallery</span>
-            </Button>
-          </div>
+              <div className="mt-4 grid grid-cols-2 gap-3">
+                <Button
+                  variant="outline"
+                  className="h-14 w-full gap-2 rounded-2xl px-3 text-sm font-semibold transition-transform duration-150 active:scale-[0.97] sm:text-base"
+                  onClick={() => cameraRef.current?.click()}
+                >
+                  <RefreshCw className="h-5 w-5 shrink-0" />
+                  <span>Retake</span>
+                </Button>
+                <Button
+                  className="h-14 w-full gap-2 rounded-2xl px-3 text-sm font-semibold transition-transform duration-150 active:scale-[0.97] sm:text-base"
+                  onClick={run}
+                >
+                  <Check className="h-5 w-5 shrink-0" />
+                  <span>Use Photo</span>
+                </Button>
+              </div>
             </>
           ) : (
             <>
               <BodySilhouetteGuide className="mt-4" />
-              <Button
-                className="mt-4 h-20 w-full gap-2 rounded-2xl text-base font-bold"
-                onClick={() => cameraRef.current?.click()}
-              >
-                <Camera className="h-6 w-6 shrink-0" /> Open Camera
-              </Button>
-              <Button
-                variant="outline"
-                className="mt-3 h-13 w-full gap-2 rounded-xl px-3 text-sm font-semibold sm:text-base"
-                onClick={() => galleryRef.current?.click()}
-              >
-                <ImageIcon className="h-5 w-5 shrink-0" />
-                <span className="truncate">Choose from Gallery</span>
-              </Button>
+              <div className="mt-4 grid grid-cols-2 gap-3">
+                <Button
+                  className="h-14 w-full gap-2 rounded-2xl px-3 text-sm font-semibold transition-transform duration-150 active:scale-[0.97] sm:text-base"
+                  onClick={() => cameraRef.current?.click()}
+                >
+                  <Camera className="h-5 w-5 shrink-0" />
+                  <span>Camera</span>
+                </Button>
+                <Button
+                  variant="outline"
+                  className="h-14 w-full gap-2 rounded-2xl px-3 text-sm font-semibold transition-transform duration-150 active:scale-[0.97] sm:text-base"
+                  onClick={() => galleryRef.current?.click()}
+                >
+                  <ImageIcon className="h-5 w-5 shrink-0" />
+                  <span>Gallery</span>
+                </Button>
+              </div>
             </>
           )}
         </section>
