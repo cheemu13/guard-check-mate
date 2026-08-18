@@ -240,17 +240,18 @@ function NewInspection() {
             <>
               <BodySilhouetteGuide className="mt-4" />
               <Button
-                className="mt-4 h-20 w-full text-base font-bold"
+                className="mt-4 h-20 w-full gap-2 rounded-2xl text-base font-bold"
                 onClick={() => cameraRef.current?.click()}
               >
-                <Camera className="mr-2 h-6 w-6" /> Open Camera
+                <Camera className="h-6 w-6 shrink-0" /> Open Camera
               </Button>
               <Button
                 variant="outline"
-                className="mt-3 h-13 w-full font-bold"
+                className="mt-3 h-13 w-full gap-2 rounded-xl px-3 text-sm font-semibold sm:text-base"
                 onClick={() => galleryRef.current?.click()}
               >
-                <ImageIcon className="mr-2 h-5 w-5" /> Choose from Gallery
+                <ImageIcon className="h-5 w-5 shrink-0" />
+                <span className="truncate">Choose from Gallery</span>
               </Button>
             </>
           )}
