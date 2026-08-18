@@ -217,22 +217,24 @@ function NewInspection() {
                 alt="Your uniform photo"
                 className="mt-4 aspect-3/4 w-full rounded-xl border border-border object-cover"
               />
-              <div className="mt-3 grid grid-cols-2 gap-3">
-                <Button
-                  variant="outline"
-                  className="h-13 w-full font-bold"
-                  onClick={() => cameraRef.current?.click()}
-                >
-                  <RefreshCw className="mr-2 h-5 w-5" /> Retake Photo
-                </Button>
-                <Button
-                  variant="outline"
-                  className="h-13 w-full font-bold"
-                  onClick={() => galleryRef.current?.click()}
-                >
-                  <ImageIcon className="mr-2 h-5 w-5" /> Use Another Photo
-                </Button>
-              </div>
+          <div className="mt-3 grid grid-cols-2 gap-3">
+            <Button
+              variant="outline"
+              className="h-13 w-full gap-2 rounded-xl px-3 text-sm font-semibold sm:text-base"
+              onClick={() => cameraRef.current?.click()}
+            >
+              <RefreshCw className="h-5 w-5 shrink-0" />
+              <span className="truncate">Retake</span>
+            </Button>
+            <Button
+              variant="outline"
+              className="h-13 w-full gap-2 rounded-xl px-3 text-sm font-semibold sm:text-base"
+              onClick={() => galleryRef.current?.click()}
+            >
+              <ImageIcon className="h-5 w-5 shrink-0" />
+              <span className="truncate">Gallery</span>
+            </Button>
+          </div>
             </>
           ) : (
             <>
