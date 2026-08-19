@@ -287,10 +287,21 @@ function NewInspection() {
               value={guardName}
               required
               aria-required="true"
+              aria-invalid={nameError}
               maxLength={80}
-              onChange={(e) => setGuardName(e.target.value)}
+              onChange={(e) => {
+                const raw = e.target.value;
+                const filtered = raw.replace(/[^A-Za-z\s]/g, "");
+                setNameError(filtered !== raw);
+                setGuardName(filtered);
+              }}
               className="h-13 text-base"
             />
+            {nameError ? (
+              <p role="alert" className="text-xs font-medium text-destructive">
+                Please enter letters only.
+              </p>
+            ) : null}
           </div>
           <div className="space-y-2">
             <Label>Date &amp; Time</Label>
