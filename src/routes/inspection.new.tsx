@@ -69,6 +69,7 @@ function NewInspection() {
 
   const [branchName, setBranchName] = useState("");
   const [guardName, setGuardName] = useState("");
+  const [nameError, setNameError] = useState(false);
   const [guardId, setGuardId] = useState("");
   const [dateTime, setDateTime] = useState("");
   const [photo, setPhoto] = useState<string | null>(null);

@@ -90,7 +90,7 @@ function LoginPage() {
       </div>
       <div className="mt-8">
         <h1 className="text-2xl font-black text-foreground">
-          {role === "guard" ? "Daily Uniform Check" : "Supervisor Sign In"}
+          {role === "guard" ? "Uniform CheckMate" : "Supervisor Sign In"}
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
           {role === "guard" ? "Sign in to start your check." : "View inspections, history and reports."}
