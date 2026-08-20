@@ -245,26 +245,6 @@ function NewInspection() {
         </section>
       </div>
 
-      <div className="fixed inset-x-0 bottom-0 border-t border-border bg-background/95 px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-4 backdrop-blur">
-        <Button
-          onClick={() => void run()}
-          disabled={loading || !canCheck}
-          className="h-14 w-full text-base font-bold"
-        >
-          {loading ? (
-            <>
-              <Loader2 className="mr-2 h-5 w-5 animate-spin" /> आपकी वर्दी जाँची जा रही है…
-            </>
-          ) : (
-            "मेरी वर्दी जाँचें"
-          )}
-        </Button>
-        {!canCheck && !loading ? (
-          <p className="mt-2 text-center text-sm text-muted-foreground">
-            {!photo ? "आगे बढ़ने के लिए अपनी वर्दी की फ़ोटो लें।" : FULL_BODY_MESSAGE}
-          </p>
-        ) : null}
-      </div>
     </div>
   );
 }
