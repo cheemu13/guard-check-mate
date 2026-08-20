@@ -78,7 +78,7 @@ function NewInspection() {
     setDateTime(new Date().toISOString());
   }, [navigate]);
 
-  const canCheck = photo !== null && !photoBlocked;
+  
 
   async function run(captured?: string) {
     const current = captured ?? photo;
