@@ -235,7 +235,7 @@ function ResultsPage() {
             className="h-14 w-full text-base font-bold"
             onClick={() => navigate({ to: "/complete/$id", params: { id: record.id } })}
           >
-            आगे बढ़ें
+            सबमिट करें
           </Button>
         </div>
       )}

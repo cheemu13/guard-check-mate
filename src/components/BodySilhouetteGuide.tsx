@@ -25,7 +25,7 @@ export function BodySilhouetteGuide({ className = "" }: { className?: string }) 
         </svg>
       </div>
       <p className="px-4 text-center text-sm font-semibold text-muted-foreground">
-        Please take a full-length photo. Stand so your full body — head to toe — fits inside the frame, facing the camera.
+        कृपया पूरी लंबाई की फ़ोटो लें। कैमरे की ओर मुँह करके ऐसे खड़े हों कि सिर से पैर तक पूरा शरीर फ्रेम में आ जाए।
       </p>
     </div>
   );
