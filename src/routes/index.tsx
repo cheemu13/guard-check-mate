@@ -92,10 +92,11 @@ function LoginPage() {
           {role === "guard" ? "Uniform CheckMate" : "सुपरवाइज़र लॉगिन"}
         </h1>
         <p className="mx-auto mt-2 max-w-xs text-sm text-muted-foreground">
-          {role === "guard" ? "जाँच शुरू करने के लिए लॉगिन करें।" : "जाँच, इतिहास और रिपोर्ट देखें।"}
+          {role === "guard"
+            ? "जाँच शुरू करने के लिए लॉगिन करें।"
+            : "जाँच, इतिहास और रिपोर्ट देखें।"}
         </p>
       </div>
-
 
       <form onSubmit={onSubmit} className="mt-7 space-y-5">
         {role === "guard" ? (
@@ -167,4 +168,3 @@ function LoginPage() {
     </main>
   );
 }
-

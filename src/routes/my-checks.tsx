@@ -87,7 +87,9 @@ function MyChecksPage() {
                       {new Date(r.dateTime).toLocaleString()}
                     </p>
                     <p className="mt-1 text-xs text-muted-foreground">
-                      {issues.length === 0 ? "कुछ ठीक करने को नहीं" : `${issues.length} चीज़ें ठीक करनी हैं`}
+                      {issues.length === 0
+                        ? "कुछ ठीक करने को नहीं"
+                        : `${issues.length} चीज़ें ठीक करनी हैं`}
                     </p>
                   </div>
                   <span

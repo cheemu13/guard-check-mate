@@ -121,7 +121,8 @@ function NewInspection() {
       }
       navigate({ to: "/results/$id", params: { id: record.id } });
     } catch (err) {
-      const message = err instanceof Error ? err.message : "जाँच नहीं हो सकी। कृपया फिर कोशिश करें।";
+      const message =
+        err instanceof Error ? err.message : "जाँच नहीं हो सकी। कृपया फिर कोशिश करें।";
       setPhotoIssue(message);
       toast.error(message);
     } finally {
@@ -164,8 +165,8 @@ function NewInspection() {
         <section className="rounded-2xl bg-card p-5 card-shadow">
           <p className="text-base font-bold text-foreground">अपनी फ़ोटो लें</p>
           <p className="mt-1 text-sm text-muted-foreground">
-            फ़ोटो लें दबाएँ, फ़ोन को थोड़ी दूर रखें और सीधे खड़े हो जाएँ — 5 सेकंड की गिनती के बाद फ़ोटो
-            अपने आप खिंच जाएगी।
+            फ़ोटो लें दबाएँ, फ़ोन को थोड़ी दूर रखें और सीधे खड़े हो जाएँ — 5 सेकंड की गिनती के बाद
+            फ़ोटो अपने आप खिंच जाएगी।
           </p>
           {photoIssue ? (
             <p

@@ -66,7 +66,11 @@ export function CountdownCamera({
         if (deviceId && !cancelled) {
           try {
             const wideStream = await navigator.mediaDevices.getUserMedia({
-              video: { deviceId: { exact: deviceId }, width: { ideal: 1920 }, height: { ideal: 1080 } },
+              video: {
+                deviceId: { exact: deviceId },
+                width: { ideal: 1920 },
+                height: { ideal: 1080 },
+              },
               audio: false,
             });
             stream.getTracks().forEach((t) => t.stop());
