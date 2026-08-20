@@ -183,22 +183,24 @@ function NewInspection() {
                 alt="आपकी वर्दी की फ़ोटो"
                 className="mt-4 aspect-3/4 w-full rounded-2xl border border-border object-cover"
               />
-              <div className="mt-4 grid grid-cols-2 gap-3">
+              <div className="mt-4">
                 <Button
                   variant="outline"
-                  className="h-14 w-full gap-2 rounded-2xl px-3 text-sm font-semibold transition-transform duration-150 active:scale-[0.97] sm:text-base"
+                  className="h-14 w-full gap-2 rounded-2xl px-3 text-base font-semibold transition-transform duration-150 active:scale-[0.97]"
                   onClick={() => setCameraOpen(true)}
-                >
-                  <RefreshCw className="h-5 w-5 shrink-0" />
-                  <span>दोबारा लें</span>
-                </Button>
-                <Button
-                  className="h-14 w-full gap-2 rounded-2xl px-3 text-sm font-semibold transition-transform duration-150 active:scale-[0.97] sm:text-base"
-                  onClick={() => void run()}
                   disabled={loading}
                 >
-                  <Check className="h-5 w-5 shrink-0" />
-                  <span>यही फ़ोटो लें</span>
+                  {loading ? (
+                    <>
+                      <Loader2 className="h-5 w-5 shrink-0 animate-spin" />
+                      <span>आपकी वर्दी जाँची जा रही है…</span>
+                    </>
+                  ) : (
+                    <>
+                      <RefreshCw className="h-5 w-5 shrink-0" />
+                      <span>दोबारा लें</span>
+                    </>
+                  )}
                 </Button>
               </div>
             </>
