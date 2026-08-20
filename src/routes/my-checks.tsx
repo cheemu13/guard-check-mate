@@ -93,7 +93,7 @@ function MyChecksPage() {
                   <span
                     className={`shrink-0 rounded-full px-3 py-1 text-xs font-bold ${OVERALL_META[r.result.overall].className}`}
                   >
-                    {OVERALL_META[r.result.overall].label}
+                    {r.result.overall === "all_correct" ? "सब सही है" : "सुधार ज़रूरी है"}
                   </span>
                 </div>
               </Link>
