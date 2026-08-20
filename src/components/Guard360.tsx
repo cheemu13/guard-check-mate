@@ -24,6 +24,7 @@ export function Guard360({ className = "" }: { className?: string }) {
   const [i, setI] = useState(0);
   const [auto, setAuto] = useState(true);
   const startX = useRef<number | null>(null);
+  const timer = useRef<number | null>(null);
 
   const step = (d: number) => setI((p) => (p + d + VIEWS.length) % VIEWS.length);
   const manual = (fn: () => void) => {
