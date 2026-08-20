@@ -112,19 +112,6 @@ function LoginPage() {
                 maxLength={20}
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="pin">पिन</Label>
-              <Input
-                id="pin"
-                type="password"
-                inputMode="numeric"
-                value={pin}
-                onChange={(e) => setPin(e.target.value.replace(/\D/g, ""))}
-                placeholder="••••"
-                className="h-14 text-base tracking-widest"
-                maxLength={6}
-              />
-            </div>
           </>
         ) : (
           <>
