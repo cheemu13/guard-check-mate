@@ -64,7 +64,7 @@ export function Guard360({ className = "" }: { className?: string }) {
           const x = e.changedTouches[0]?.clientX;
           if (s == null || x == null) return;
           const dx = x - s;
-          if (Math.abs(dx) > 30) step(dx < 0 ? 1 : -1);
+          if (Math.abs(dx) > 30) manual(() => step(dx < 0 ? 1 : -1));
           startX.current = null;
         }}
       >
