@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { ShieldCheck } from "lucide-react";
-import { IciciLogo } from "@/components/IciciLogo";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -69,8 +69,7 @@ function LoginPage() {
 
   return (
     <main className="flex min-h-screen flex-col bg-background px-6 pb-10 pt-10">
-      <div className="flex items-start justify-between gap-3">
-        <IciciLogo className="self-start" />
+      <div className="flex justify-end">
         <button
           type="button"
           aria-label={role === "supervisor" ? "Back to guard login" : "Supervisor access"}
@@ -88,11 +87,11 @@ function LoginPage() {
           <ShieldCheck className="h-5 w-5" />
         </button>
       </div>
-      <div className="mt-8">
-        <h1 className="text-2xl font-black text-foreground">
+      <div className="mt-10 text-center">
+        <h1 className="text-3xl font-black text-foreground">
           {role === "guard" ? "Uniform CheckMate" : "Supervisor Sign In"}
         </h1>
-        <p className="mt-1 text-sm text-muted-foreground">
+        <p className="mx-auto mt-2 max-w-xs text-sm text-muted-foreground">
           {role === "guard" ? "Sign in to start your check." : "View inspections, history and reports."}
         </p>
       </div>
