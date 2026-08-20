@@ -79,6 +79,13 @@ function NewInspection() {
     setDateTime(new Date().toISOString());
   }, [navigate]);
 
+  // Spoken Hindi guidance starts on its own as soon as this screen opens.
+  useEffect(() => {
+    speakHindi(CAPTURE_GUIDANCE_HI);
+    return () => stopSpeaking();
+  }, []);
+
+
   
 
   async function run(captured?: string) {
