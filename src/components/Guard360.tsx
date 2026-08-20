@@ -53,8 +53,8 @@ export function Guard360({ className = "" }: { className?: string }) {
         aria-label="360 degree uniform view"
         tabIndex={0}
         onKeyDown={(e) => {
-          if (e.key === "ArrowLeft") step(-1);
-          if (e.key === "ArrowRight") step(1);
+          if (e.key === "ArrowLeft") manual(() => step(-1));
+          if (e.key === "ArrowRight") manual(() => step(1));
         }}
         onTouchStart={(e) => {
           startX.current = e.touches[0]?.clientX ?? null;
