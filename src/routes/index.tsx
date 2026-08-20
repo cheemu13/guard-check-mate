@@ -47,8 +47,8 @@ function LoginPage() {
     e.preventDefault();
     setError("");
     if (role === "guard") {
-      if (empId.trim().length < 3 || !/^\d{4,6}$/.test(pin)) {
-        setError("अपना कर्मचारी आईडी और 4–6 अंकों का पिन डालें।");
+      if (empId.trim().length < 3) {
+        setError("अपना कर्मचारी आईडी डालें।");
         return;
       }
       login({
