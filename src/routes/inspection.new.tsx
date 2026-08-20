@@ -1,17 +1,14 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { Camera, Check, ImageIcon, Loader2, LogOut, RefreshCw } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { Camera, Check, Loader2, LogOut, RefreshCw } from "lucide-react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import idealUniform from "@/assets/ideal-uniform-reference.jpg";
 import { AppHeader } from "@/components/AppHeader";
 import { BodySilhouetteGuide } from "@/components/BodySilhouetteGuide";
+import { CountdownCamera } from "@/components/CountdownCamera";
 import { Guard360 } from "@/components/Guard360";
-
-
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { currentSession, logout } from "@/lib/auth";
 import { inspectUniform } from "@/lib/inspect.functions";
 import { saveInspection, type InspectionRecord } from "@/lib/inspection";
@@ -38,16 +35,6 @@ export const Route = createFileRoute("/inspection/new")({
   component: NewInspection,
 });
 
-async function toDataUrl(file: File, maxSize = 1024): Promise<string> {
-  const bitmap = await createImageBitmap(file);
-  const scale = Math.min(1, maxSize / Math.max(bitmap.width, bitmap.height));
-  const canvas = document.createElement("canvas");
-  canvas.width = Math.round(bitmap.width * scale);
-  canvas.height = Math.round(bitmap.height * scale);
-  canvas.getContext("2d")?.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
-  return canvas.toDataURL("image/jpeg", 0.85);
-}
-
 async function urlToDataUrl(url: string): Promise<string> {
   const blob = await (await fetch(url)).blob();
   return new Promise((resolve, reject) => {
@@ -64,15 +51,13 @@ const FULL_BODY_MESSAGE =
 function NewInspection() {
   const navigate = useNavigate();
   const inspect = useServerFn(inspectUniform);
-  const galleryRef = useRef<HTMLInputElement>(null);
-  const cameraRef = useRef<HTMLInputElement>(null);
 
   const [branchName, setBranchName] = useState("");
   const [guardName, setGuardName] = useState("");
-  const [nameError, setNameError] = useState(false);
   const [guardId, setGuardId] = useState("");
   const [dateTime, setDateTime] = useState("");
   const [photo, setPhoto] = useState<string | null>(null);
+  const [cameraOpen, setCameraOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [photoIssue, setPhotoIssue] = useState<string | null>(null);
   const [photoBlocked, setPhotoBlocked] = useState(false);
@@ -93,37 +78,19 @@ function NewInspection() {
     setDateTime(new Date().toISOString());
   }, [navigate]);
 
-  async function onPick(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    e.target.value = "";
-    if (!file) return;
-    try {
-      setPhotoIssue(null);
-      setPhotoBlocked(false);
-      setPhoto(await toDataUrl(file));
-    } catch {
-      toast.error("Could not read that photo. Please try again.");
-    }
-  }
+  const canCheck = photo !== null && !photoBlocked;
 
-
-  const detailsFilled = branchName.trim() !== "" && guardName.trim() !== "";
-  const canCheck = detailsFilled && photo !== null && !photoBlocked;
-
-  async function run() {
-    if (!photo) {
+  async function run(captured?: string) {
+    const current = captured ?? photo;
+    if (!current) {
       toast.error("Take your uniform photo first.");
-      return;
-    }
-    if (!detailsFilled) {
-      toast.error("Fill in your branch and name first.");
       return;
     }
     setLoading(true);
     setPhotoIssue(null);
     try {
       const referenceImage = await urlToDataUrl(idealUniform);
-      const response = await inspect({ data: { guardPhoto: photo, referenceImage } });
+      const response = await inspect({ data: { guardPhoto: current, referenceImage } });
       if (!response.ok) {
         // Full body / front view not confirmed → submission stays blocked.
         setPhotoBlocked(true);
@@ -138,7 +105,7 @@ function NewInspection() {
         guardName: guardName.trim() || guardId,
         guardId: guardId.trim(),
         dateTime,
-        guardPhoto: photo,
+        guardPhoto: current,
         result: response.result,
         comments: "",
         submitted: false,
@@ -164,6 +131,19 @@ function NewInspection() {
 
   return (
     <div className="min-h-screen bg-background pb-32">
+      {cameraOpen ? (
+        <CountdownCamera
+          onClose={() => setCameraOpen(false)}
+          onCapture={(dataUrl) => {
+            setCameraOpen(false);
+            setPhotoIssue(null);
+            setPhotoBlocked(false);
+            setPhoto(dataUrl);
+            void run(dataUrl);
+          }}
+        />
+      ) : null}
+
       <AppHeader
         title="Today's Inspection"
         subtitle={guardName ? `${guardName} · ${guardId}` : undefined}
@@ -182,27 +162,11 @@ function NewInspection() {
       />
       <div className="space-y-5 px-4 pt-5">
         <section className="rounded-2xl bg-card p-5 card-shadow">
-          <p className="text-base font-bold text-foreground">
-            Step 1 · Take your photo <span className="text-destructive">*</span>
-          </p>
+          <p className="text-base font-bold text-foreground">Take your photo</p>
           <p className="mt-1 text-sm text-muted-foreground">
-            Stand straight, full body in the frame, front view.
+            Tap Capture Photo, place the phone at a distance and stand straight — the photo is taken
+            automatically after a 5 second countdown.
           </p>
-          <input
-            ref={cameraRef}
-            type="file"
-            accept="image/*"
-            capture="environment"
-            className="hidden"
-            onChange={onPick}
-          />
-          <input
-            ref={galleryRef}
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={onPick}
-          />
           {photoIssue ? (
             <p
               role="alert"
@@ -222,14 +186,15 @@ function NewInspection() {
                 <Button
                   variant="outline"
                   className="h-14 w-full gap-2 rounded-2xl px-3 text-sm font-semibold transition-transform duration-150 active:scale-[0.97] sm:text-base"
-                  onClick={() => cameraRef.current?.click()}
+                  onClick={() => setCameraOpen(true)}
                 >
                   <RefreshCw className="h-5 w-5 shrink-0" />
                   <span>Retake</span>
                 </Button>
                 <Button
                   className="h-14 w-full gap-2 rounded-2xl px-3 text-sm font-semibold transition-transform duration-150 active:scale-[0.97] sm:text-base"
-                  onClick={run}
+                  onClick={() => void run()}
+                  disabled={loading}
                 >
                   <Check className="h-5 w-5 shrink-0" />
                   <span>Use Photo</span>
@@ -239,76 +204,15 @@ function NewInspection() {
           ) : (
             <>
               <BodySilhouetteGuide className="mt-4" />
-              <div className="mt-4 grid grid-cols-2 gap-3">
-                <Button
-                  className="h-14 w-full gap-2 rounded-2xl px-3 text-sm font-semibold transition-transform duration-150 active:scale-[0.97] sm:text-base"
-                  onClick={() => cameraRef.current?.click()}
-                >
-                  <Camera className="h-5 w-5 shrink-0" />
-                  <span>Camera</span>
-                </Button>
-                <Button
-                  variant="outline"
-                  className="h-14 w-full gap-2 rounded-2xl px-3 text-sm font-semibold transition-transform duration-150 active:scale-[0.97] sm:text-base"
-                  onClick={() => galleryRef.current?.click()}
-                >
-                  <ImageIcon className="h-5 w-5 shrink-0" />
-                  <span>Gallery</span>
-                </Button>
-              </div>
+              <Button
+                className="mt-4 h-14 w-full gap-2 rounded-2xl px-3 text-base font-semibold transition-transform duration-150 active:scale-[0.97]"
+                onClick={() => setCameraOpen(true)}
+              >
+                <Camera className="h-5 w-5 shrink-0" />
+                <span>Capture Photo</span>
+              </Button>
             </>
           )}
-        </section>
-
-
-        <section className="space-y-4 rounded-2xl bg-card p-5 card-shadow">
-          <p className="text-base font-bold text-foreground">Step 2 · Your details</p>
-          <div className="space-y-2">
-            <Label htmlFor="branch">
-              Branch <span className="text-destructive">*</span>
-            </Label>
-            <Input
-              id="branch"
-              value={branchName}
-              required
-              aria-required="true"
-              maxLength={80}
-              onChange={(e) => setBranchName(e.target.value)}
-              className="h-13 text-base"
-              placeholder="e.g. Bandra West Branch"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="gname">
-              Your Name <span className="text-destructive">*</span>
-            </Label>
-            <Input
-              id="gname"
-              value={guardName}
-              required
-              aria-required="true"
-              aria-invalid={nameError}
-              maxLength={80}
-              onChange={(e) => {
-                const raw = e.target.value;
-                const filtered = raw.replace(/[^A-Za-z\s]/g, "");
-                setNameError(filtered !== raw);
-                setGuardName(filtered);
-              }}
-              className="h-13 text-base"
-            />
-            {nameError ? (
-              <p role="alert" className="text-xs font-medium text-destructive">
-                Please enter letters only.
-              </p>
-            ) : null}
-          </div>
-          <div className="space-y-2">
-            <Label>Date &amp; Time</Label>
-            <div className="flex h-13 items-center rounded-md border border-input bg-muted px-3 text-sm text-muted-foreground">
-              {dateTime ? new Date(dateTime).toLocaleString() : "—"}
-            </div>
-          </div>
         </section>
 
         <section className="rounded-2xl bg-card p-5 card-shadow">
@@ -336,12 +240,11 @@ function NewInspection() {
             Open full Uniform Standard Guide
           </Link>
         </section>
-
       </div>
 
       <div className="fixed inset-x-0 bottom-0 border-t border-border bg-background/95 px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-4 backdrop-blur">
         <Button
-          onClick={run}
+          onClick={() => void run()}
           disabled={loading || !canCheck}
           className="h-14 w-full text-base font-bold"
         >
@@ -355,12 +258,7 @@ function NewInspection() {
         </Button>
         {!canCheck && !loading ? (
           <p className="mt-2 text-center text-sm text-muted-foreground">
-            {!photo
-              ? "Take your uniform photo in Step 1 to continue."
-              : photoBlocked
-                ? FULL_BODY_MESSAGE
-                : "Fill in your branch and name in Step 2 to continue."}
-
+            {!photo ? "Capture your uniform photo to continue." : FULL_BODY_MESSAGE}
           </p>
         ) : null}
       </div>
