@@ -45,6 +45,13 @@ For each item assign exactly one status:
 "needs_correction" — the item is present but worn wrongly, damaged, dirty or not visible
 "missing" — the item is not there at all
 
+EXTRA RULE — BELT BUCKLE ALIGNMENT (only for "Black Belt with Metal Buckle"):
+If the belt buckle is CLEARLY visible and it is off-centre (not at the middle of the waist)
+or slanted/tilted, mark that item as "needs_correction" with "severity":"minor",
+a short recommendation like "Belt buckle is not centred", a reason describing what you saw,
+and a box around the buckle. If the buckle is not clearly visible, do NOT check its alignment
+and do NOT flag it for this reason.
+
 Do NOT give any score, percentage, rating or marks.
 For every item that is not "correct", write a very short recommendation in simple words
 (max 8 words), for example "Name badge missing" or "Shirt is not tucked in".

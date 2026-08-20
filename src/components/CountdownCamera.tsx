@@ -16,7 +16,7 @@ export function CountdownCamera({
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const [facing, setFacing] = useState<"environment" | "user">("user");
-  const [count, setCount] = useState(5);
+  const [count, setCount] = useState(8);
   const [error, setError] = useState("");
   const [wide, setWide] = useState(true);
   const doneRef = useRef(false);
@@ -115,7 +115,7 @@ export function CountdownCamera({
 
   useEffect(() => {
     if (error) return;
-    setCount(5);
+    setCount(8);
     doneRef.current = false;
     const id = window.setInterval(() => {
       setCount((c) => {
@@ -150,7 +150,7 @@ export function CountdownCamera({
         </button>
         <p className="mt-1 flex-1 text-center text-sm font-semibold text-white">
           {wide
-            ? "फ़ोन को 2–3 फुट दूर रखें और सिर से पैर तक फ्रेम में खड़े हों।"
+            ? "फ़ोन को 2–3 फुट दूर रखें और सीधे खड़े हों, सिर से पैर तक पूरा शरीर दिखे।"
             : "फ़ोन को थोड़ा और दूर रखें ताकि सिर से पैर तक पूरा शरीर फ्रेम में आ जाए।"}
         </p>
         <button

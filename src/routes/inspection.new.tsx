@@ -10,6 +10,7 @@ import { CountdownCamera } from "@/components/CountdownCamera";
 import { Guard360 } from "@/components/Guard360";
 import { Button } from "@/components/ui/button";
 import { currentSession, logout } from "@/lib/auth";
+import { CAPTURE_GUIDANCE_HI, speakHindi, stopSpeaking } from "@/lib/speak";
 import { inspectUniform } from "@/lib/inspect.functions";
 import { saveInspection, type InspectionRecord } from "@/lib/inspection";
 import { BRANCH_KEY } from "./settings";
@@ -77,6 +78,13 @@ function NewInspection() {
     setBranchName(window.localStorage.getItem(BRANCH_KEY) ?? "");
     setDateTime(new Date().toISOString());
   }, [navigate]);
+
+  // Spoken Hindi guidance starts on its own as soon as this screen opens.
+  useEffect(() => {
+    speakHindi(CAPTURE_GUIDANCE_HI);
+    return () => stopSpeaking();
+  }, []);
+
 
   
 
@@ -165,8 +173,8 @@ function NewInspection() {
         <section className="rounded-2xl bg-card p-5 card-shadow">
           <p className="text-base font-bold text-foreground">अपनी फ़ोटो लें</p>
           <p className="mt-1 text-sm text-muted-foreground">
-            फ़ोटो लें दबाएँ, फ़ोन को थोड़ी दूर रखें और सीधे खड़े हो जाएँ — 5 सेकंड की गिनती के बाद
-            फ़ोटो अपने आप खिंच जाएगी।
+            फ़ोन को 2–3 फुट दूर रखें और सीधे खड़े हो जाएँ — 8 सेकंड की गिनती के बाद फ़ोटो अपने आप
+            खिंच जाएगी।
           </p>
           {photoIssue ? (
             <p
