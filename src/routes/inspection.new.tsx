@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { Camera, Check, Loader2, LogOut, RefreshCw } from "lucide-react";
+import { Camera, Loader2, LogOut, RefreshCw } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import idealUniform from "@/assets/ideal-uniform-reference.jpg";
