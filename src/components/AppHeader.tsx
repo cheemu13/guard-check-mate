@@ -26,7 +26,7 @@ export function AppHeader({
             <ArrowLeft className="h-5 w-5" />
           </button>
         ) : null}
-        <div className="min-w-0">
+        <div className="min-w-0 flex-1">
           <h1 className="truncate text-base font-bold text-primary-foreground">{title}</h1>
           {subtitle ? (
             <p className="truncate text-xs text-primary-foreground/70">{subtitle}</p>
