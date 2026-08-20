@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, RotateCw } from "lucide-react";
 import v0 from "@/assets/guard360-0-front.jpg.asset.json";
 import v1 from "@/assets/guard360-1-front-right.jpg.asset.json";
