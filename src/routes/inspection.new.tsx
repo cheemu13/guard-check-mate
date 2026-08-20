@@ -131,7 +131,7 @@ function NewInspection() {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-32">
+    <div className="min-h-screen bg-background pb-10">
       {cameraOpen ? (
         <CountdownCamera
           onClose={() => setCameraOpen(false)}
