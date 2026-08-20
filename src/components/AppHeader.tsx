@@ -16,14 +16,9 @@ export function AppHeader({
   action?: ReactNode | undefined;
 }) {
   const router = useRouter();
-  const [homeTo, setHomeTo] = useState("/");
-  useEffect(() => {
-    const role = currentSession()?.role;
-    setHomeTo(role === "supervisor" ? "/supervisor" : role === "guard" ? "/inspection/new" : "/");
-  }, []);
   return (
     <header className="header-gradient sticky top-0 z-20 px-4 pt-[env(safe-area-inset-top)] pb-4">
-      <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 pt-4">
+      <div className="flex items-center gap-3 pt-4">
         {back ? (
           <button
             aria-label="वापस जाएँ"
@@ -32,11 +27,7 @@ export function AppHeader({
           >
             <ArrowLeft className="h-5 w-5" />
           </button>
-        ) : (
-          <Link to={homeTo} className="shrink-0">
-            <img src={iciciLogoMark} alt="ICICI" className="h-10 w-10 object-contain" />
-          </Link>
-        )}
+        ) : null}
         <div className="min-w-0">
           <h1 className="truncate text-base font-bold text-primary-foreground">{title}</h1>
           {subtitle ? (
