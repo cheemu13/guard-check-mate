@@ -32,7 +32,7 @@ function LoginPage() {
   const navigate = useNavigate();
   const [role, setRole] = useState<Role>("guard");
   const [empId, setEmpId] = useState("");
-  const [pin, setPin] = useState("");
+  
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
