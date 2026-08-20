@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { AppHeader } from "@/components/AppHeader";
 import { Button } from "@/components/ui/button";
 import { currentSession, logout } from "@/lib/auth";
-import { issuesOf, loadInspections, OVERALL_META, type InspectionRecord } from "@/lib/inspection";
+import { issuesOf, loadInspections, type InspectionRecord } from "@/lib/inspection";
 
 export const Route = createFileRoute("/my-checks")({
   head: () => ({
