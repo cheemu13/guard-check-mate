@@ -109,7 +109,7 @@ export function Guard360({ className = "" }: { className?: string }) {
             key={v.url}
             type="button"
             aria-label={`Show ${v.label} view`}
-            onClick={() => setI(idx)}
+            onClick={() => manual(() => setI(idx))}
             className={`h-2 rounded-full transition-all ${
               idx === i ? "w-5 bg-primary" : "w-2 bg-border"
             }`}
