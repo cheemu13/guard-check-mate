@@ -1,8 +1,6 @@
-import { Link, useRouter } from "@tanstack/react-router";
+import { useRouter } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
-import { useEffect, useState, type ReactNode } from "react";
-import iciciLogoMark from "@/assets/icici-logo-mark.png";
-import { currentSession } from "@/lib/auth";
+import { type ReactNode } from "react";
 
 export function AppHeader({
   title,
