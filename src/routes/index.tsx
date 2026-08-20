@@ -32,7 +32,7 @@ function LoginPage() {
   const navigate = useNavigate();
   const [role, setRole] = useState<Role>("guard");
   const [empId, setEmpId] = useState("");
-  const [pin, setPin] = useState("");
+  
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -47,8 +47,8 @@ function LoginPage() {
     e.preventDefault();
     setError("");
     if (role === "guard") {
-      if (empId.trim().length < 3 || !/^\d{4,6}$/.test(pin)) {
-        setError("अपना कर्मचारी आईडी और 4–6 अंकों का पिन डालें।");
+      if (empId.trim().length < 3) {
+        setError("अपना कर्मचारी आईडी डालें।");
         return;
       }
       login({
@@ -110,19 +110,6 @@ function LoginPage() {
                 placeholder="e.g. SG-10428"
                 className="h-14 text-base"
                 maxLength={20}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="pin">पिन</Label>
-              <Input
-                id="pin"
-                type="password"
-                inputMode="numeric"
-                value={pin}
-                onChange={(e) => setPin(e.target.value.replace(/\D/g, ""))}
-                placeholder="••••"
-                className="h-14 text-base tracking-widest"
-                maxLength={6}
               />
             </div>
           </>

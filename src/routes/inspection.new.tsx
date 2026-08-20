@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { Camera, Check, Loader2, LogOut, RefreshCw } from "lucide-react";
+import { Camera, Loader2, LogOut, RefreshCw } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import idealUniform from "@/assets/ideal-uniform-reference.jpg";
@@ -78,7 +78,7 @@ function NewInspection() {
     setDateTime(new Date().toISOString());
   }, [navigate]);
 
-  const canCheck = photo !== null && !photoBlocked;
+  
 
   async function run(captured?: string) {
     const current = captured ?? photo;
@@ -131,7 +131,7 @@ function NewInspection() {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-32">
+    <div className="min-h-screen bg-background pb-10">
       {cameraOpen ? (
         <CountdownCamera
           onClose={() => setCameraOpen(false)}
@@ -183,22 +183,24 @@ function NewInspection() {
                 alt="आपकी वर्दी की फ़ोटो"
                 className="mt-4 aspect-3/4 w-full rounded-2xl border border-border object-cover"
               />
-              <div className="mt-4 grid grid-cols-2 gap-3">
+              <div className="mt-4">
                 <Button
                   variant="outline"
-                  className="h-14 w-full gap-2 rounded-2xl px-3 text-sm font-semibold transition-transform duration-150 active:scale-[0.97] sm:text-base"
+                  className="h-14 w-full gap-2 rounded-2xl px-3 text-base font-semibold transition-transform duration-150 active:scale-[0.97]"
                   onClick={() => setCameraOpen(true)}
-                >
-                  <RefreshCw className="h-5 w-5 shrink-0" />
-                  <span>दोबारा लें</span>
-                </Button>
-                <Button
-                  className="h-14 w-full gap-2 rounded-2xl px-3 text-sm font-semibold transition-transform duration-150 active:scale-[0.97] sm:text-base"
-                  onClick={() => void run()}
                   disabled={loading}
                 >
-                  <Check className="h-5 w-5 shrink-0" />
-                  <span>यही फ़ोटो लें</span>
+                  {loading ? (
+                    <>
+                      <Loader2 className="h-5 w-5 shrink-0 animate-spin" />
+                      <span>आपकी वर्दी जाँची जा रही है…</span>
+                    </>
+                  ) : (
+                    <>
+                      <RefreshCw className="h-5 w-5 shrink-0" />
+                      <span>दोबारा लें</span>
+                    </>
+                  )}
                 </Button>
               </div>
             </>
@@ -243,26 +245,6 @@ function NewInspection() {
         </section>
       </div>
 
-      <div className="fixed inset-x-0 bottom-0 border-t border-border bg-background/95 px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-4 backdrop-blur">
-        <Button
-          onClick={() => void run()}
-          disabled={loading || !canCheck}
-          className="h-14 w-full text-base font-bold"
-        >
-          {loading ? (
-            <>
-              <Loader2 className="mr-2 h-5 w-5 animate-spin" /> आपकी वर्दी जाँची जा रही है…
-            </>
-          ) : (
-            "मेरी वर्दी जाँचें"
-          )}
-        </Button>
-        {!canCheck && !loading ? (
-          <p className="mt-2 text-center text-sm text-muted-foreground">
-            {!photo ? "आगे बढ़ने के लिए अपनी वर्दी की फ़ोटो लें।" : FULL_BODY_MESSAGE}
-          </p>
-        ) : null}
-      </div>
     </div>
   );
 }

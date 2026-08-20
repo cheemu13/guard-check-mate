@@ -1,8 +1,6 @@
-import { Link, useRouter } from "@tanstack/react-router";
+import { useRouter } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
-import { useEffect, useState, type ReactNode } from "react";
-import iciciLogoMark from "@/assets/icici-logo-mark.png";
-import { currentSession } from "@/lib/auth";
+import { type ReactNode } from "react";
 
 export function AppHeader({
   title,
@@ -16,14 +14,9 @@ export function AppHeader({
   action?: ReactNode | undefined;
 }) {
   const router = useRouter();
-  const [homeTo, setHomeTo] = useState("/");
-  useEffect(() => {
-    const role = currentSession()?.role;
-    setHomeTo(role === "supervisor" ? "/supervisor" : role === "guard" ? "/inspection/new" : "/");
-  }, []);
   return (
     <header className="header-gradient sticky top-0 z-20 px-4 pt-[env(safe-area-inset-top)] pb-4">
-      <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 pt-4">
+      <div className="flex items-center gap-3 pt-4">
         {back ? (
           <button
             aria-label="वापस जाएँ"
@@ -32,12 +25,8 @@ export function AppHeader({
           >
             <ArrowLeft className="h-5 w-5" />
           </button>
-        ) : (
-          <Link to={homeTo} className="shrink-0">
-            <img src={iciciLogoMark} alt="ICICI" className="h-10 w-10 object-contain" />
-          </Link>
-        )}
-        <div className="min-w-0">
+        ) : null}
+        <div className="min-w-0 flex-1">
           <h1 className="truncate text-base font-bold text-primary-foreground">{title}</h1>
           {subtitle ? (
             <p className="truncate text-xs text-primary-foreground/70">{subtitle}</p>

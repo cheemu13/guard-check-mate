@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, RotateCw } from "lucide-react";
 import v0 from "@/assets/guard360-0-front.jpg.asset.json";
 import v1 from "@/assets/guard360-1-front-right.jpg.asset.json";
@@ -22,9 +22,28 @@ const VIEWS = [
 
 export function Guard360({ className = "" }: { className?: string }) {
   const [i, setI] = useState(0);
+  const [auto, setAuto] = useState(true);
   const startX = useRef<number | null>(null);
+  const timer = useRef<number | null>(null);
 
   const step = (d: number) => setI((p) => (p + d + VIEWS.length) % VIEWS.length);
+  const manual = (fn: () => void) => {
+    setAuto(false);
+    fn();
+  };
+
+  useEffect(() => {
+    if (!auto) return;
+    const start = window.setTimeout(() => {
+      const id = window.setInterval(() => step(1), 1200);
+      timer.current = id;
+    }, 2000);
+    return () => {
+      window.clearTimeout(start);
+      if (timer.current) window.clearInterval(timer.current);
+    };
+  }, [auto]);
+
 
   return (
     <div className={className}>
@@ -34,8 +53,8 @@ export function Guard360({ className = "" }: { className?: string }) {
         aria-label="360 degree uniform view"
         tabIndex={0}
         onKeyDown={(e) => {
-          if (e.key === "ArrowLeft") step(-1);
-          if (e.key === "ArrowRight") step(1);
+          if (e.key === "ArrowLeft") manual(() => step(-1));
+          if (e.key === "ArrowRight") manual(() => step(1));
         }}
         onTouchStart={(e) => {
           startX.current = e.touches[0]?.clientX ?? null;
@@ -45,7 +64,7 @@ export function Guard360({ className = "" }: { className?: string }) {
           const x = e.changedTouches[0]?.clientX;
           if (s == null || x == null) return;
           const dx = x - s;
-          if (Math.abs(dx) > 30) step(dx < 0 ? 1 : -1);
+          if (Math.abs(dx) > 30) manual(() => step(dx < 0 ? 1 : -1));
           startX.current = null;
         }}
       >
@@ -64,7 +83,7 @@ export function Guard360({ className = "" }: { className?: string }) {
         <button
           type="button"
           aria-label="Rotate left"
-          onClick={() => step(-1)}
+          onClick={() => manual(() => step(-1))}
           className="absolute left-2 top-1/2 grid h-10 w-10 -translate-y-1/2 place-items-center rounded-full bg-foreground/60 text-background"
         >
           <ChevronLeft className="h-5 w-5" />
@@ -72,7 +91,7 @@ export function Guard360({ className = "" }: { className?: string }) {
         <button
           type="button"
           aria-label="Rotate right"
-          onClick={() => step(1)}
+          onClick={() => manual(() => step(1))}
           className="absolute right-2 top-1/2 grid h-10 w-10 -translate-y-1/2 place-items-center rounded-full bg-foreground/60 text-background"
         >
           <ChevronRight className="h-5 w-5" />
@@ -90,7 +109,7 @@ export function Guard360({ className = "" }: { className?: string }) {
             key={v.url}
             type="button"
             aria-label={`Show ${v.label} view`}
-            onClick={() => setI(idx)}
+            onClick={() => manual(() => setI(idx))}
             className={`h-2 rounded-full transition-all ${
               idx === i ? "w-5 bg-primary" : "w-2 bg-border"
             }`}
