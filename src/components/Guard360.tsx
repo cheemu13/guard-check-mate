@@ -91,7 +91,7 @@ export function Guard360({ className = "" }: { className?: string }) {
         <button
           type="button"
           aria-label="Rotate right"
-          onClick={() => step(1)}
+          onClick={() => manual(() => step(1))}
           className="absolute right-2 top-1/2 grid h-10 w-10 -translate-y-1/2 place-items-center rounded-full bg-foreground/60 text-background"
         >
           <ChevronRight className="h-5 w-5" />
