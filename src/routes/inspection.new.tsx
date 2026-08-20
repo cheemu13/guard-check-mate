@@ -10,6 +10,7 @@ import { CountdownCamera } from "@/components/CountdownCamera";
 import { Guard360 } from "@/components/Guard360";
 import { Button } from "@/components/ui/button";
 import { currentSession, logout } from "@/lib/auth";
+import { CAPTURE_GUIDANCE_HI, speakHindi, stopSpeaking } from "@/lib/speak";
 import { inspectUniform } from "@/lib/inspect.functions";
 import { saveInspection, type InspectionRecord } from "@/lib/inspection";
 import { BRANCH_KEY } from "./settings";
