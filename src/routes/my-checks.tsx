@@ -52,10 +52,10 @@ function MyChecksPage() {
   return (
     <div className="min-h-screen bg-background pb-28">
       <AppHeader
-        title="My Past Checks"
+        title="मेरी पिछली जाँच"
         action={
           <button
-            aria-label="Log out"
+            aria-label="लॉग आउट"
             onClick={() => {
               logout();
               navigate({ to: "/" });
@@ -69,7 +69,7 @@ function MyChecksPage() {
       <div className="space-y-4 px-4 pt-5">
         {records.length === 0 ? (
           <div className="rounded-2xl bg-card p-8 text-center card-shadow">
-            <p className="text-sm text-muted-foreground">No checks yet.</p>
+            <p className="text-sm text-muted-foreground">अभी कोई जाँच नहीं है।</p>
           </div>
         ) : (
           records.map((r) => {
@@ -87,7 +87,7 @@ function MyChecksPage() {
                       {new Date(r.dateTime).toLocaleString()}
                     </p>
                     <p className="mt-1 text-xs text-muted-foreground">
-                      {issues.length === 0 ? "Nothing to fix" : `${issues.length} to fix`}
+                      {issues.length === 0 ? "कुछ ठीक करने को नहीं" : `${issues.length} चीज़ें ठीक करनी हैं`}
                     </p>
                   </div>
                   <span
@@ -104,7 +104,7 @@ function MyChecksPage() {
 
       <div className="fixed inset-x-0 bottom-0 border-t border-border bg-background/95 px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-4 backdrop-blur">
         <Button asChild className="h-14 w-full text-base font-bold">
-          <Link to="/inspection/new">Start Today's Inspection</Link>
+          <Link to="/inspection/new">आज की जाँच शुरू करें</Link>
         </Button>
       </div>
     </div>

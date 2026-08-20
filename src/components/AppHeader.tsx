@@ -26,7 +26,7 @@ export function AppHeader({
       <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 pt-4">
         {back ? (
           <button
-            aria-label="Go back"
+            aria-label="वापस जाएँ"
             onClick={() => router.history.back()}
             className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-primary-foreground/10 text-primary-foreground"
           >

@@ -48,7 +48,7 @@ function LoginPage() {
     setError("");
     if (role === "guard") {
       if (empId.trim().length < 3 || !/^\d{4,6}$/.test(pin)) {
-        setError("Enter your employee ID and 4–6 digit PIN.");
+        setError("अपना कर्मचारी आईडी और 4–6 अंकों का पिन डालें।");
         return;
       }
       login({
@@ -60,7 +60,7 @@ function LoginPage() {
       return;
     }
     if (username.trim().length < 3 || password.length < 4) {
-      setError("Enter a valid supervisor username and password.");
+      setError("सही सुपरवाइज़र यूज़रनेम और पासवर्ड डालें।");
       return;
     }
     login({ role: "supervisor", id: username.trim(), name: username.trim() });
@@ -72,7 +72,7 @@ function LoginPage() {
       <div className="flex justify-end">
         <button
           type="button"
-          aria-label={role === "supervisor" ? "Back to guard login" : "Supervisor access"}
+          aria-label={role === "supervisor" ? "गार्ड लॉगिन पर वापस जाएँ" : "सुपरवाइज़र लॉगिन"}
           aria-pressed={role === "supervisor"}
           onClick={() => {
             setError("");
@@ -89,10 +89,10 @@ function LoginPage() {
       </div>
       <div className="mt-10 text-center">
         <h1 className="text-3xl font-black text-foreground">
-          {role === "guard" ? "Uniform CheckMate" : "Supervisor Sign In"}
+          {role === "guard" ? "Uniform CheckMate" : "सुपरवाइज़र लॉगिन"}
         </h1>
         <p className="mx-auto mt-2 max-w-xs text-sm text-muted-foreground">
-          {role === "guard" ? "Sign in to start your check." : "View inspections, history and reports."}
+          {role === "guard" ? "जाँच शुरू करने के लिए लॉगिन करें।" : "जाँच, इतिहास और रिपोर्ट देखें।"}
         </p>
       </div>
 
@@ -101,7 +101,7 @@ function LoginPage() {
         {role === "guard" ? (
           <>
             <div className="space-y-2">
-              <Label htmlFor="empId">Employee ID</Label>
+              <Label htmlFor="empId">कर्मचारी आईडी</Label>
               <Input
                 id="empId"
                 value={empId}
@@ -112,7 +112,7 @@ function LoginPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="pin">PIN</Label>
+              <Label htmlFor="pin">पिन</Label>
               <Input
                 id="pin"
                 type="password"
@@ -128,7 +128,7 @@ function LoginPage() {
         ) : (
           <>
             <div className="space-y-2">
-              <Label htmlFor="username">Supervisor Username</Label>
+              <Label htmlFor="username">सुपरवाइज़र यूज़रनेम</Label>
               <Input
                 id="username"
                 autoComplete="username"
@@ -140,7 +140,7 @@ function LoginPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">पासवर्ड</Label>
               <Input
                 id="password"
                 type="password"
@@ -157,12 +157,12 @@ function LoginPage() {
 
         {error ? <p className="text-sm font-medium text-destructive">{error}</p> : null}
         <Button type="submit" className="h-14 w-full text-base font-bold">
-          {role === "guard" ? "Start Today's Inspection" : "View Inspections"}
+          {role === "guard" ? "आज की जाँच शुरू करें" : "जाँच देखें"}
         </Button>
       </form>
 
       <p className="mt-auto pt-10 text-center text-xs text-muted-foreground">
-        ICICI Bank · Security Uniform Check
+        आईसीआईसीआई बैंक · वर्दी जाँच
       </p>
     </main>
   );

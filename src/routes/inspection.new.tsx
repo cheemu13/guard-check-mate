@@ -46,7 +46,7 @@ async function urlToDataUrl(url: string): Promise<string> {
 }
 
 const FULL_BODY_MESSAGE =
-  "Please capture a clear front-facing full-body photo; ensure the entire body from head to toe is visible.";
+  "कृपया सामने से पूरी लंबाई की साफ़ फ़ोटो लें; सिर से पैर तक पूरा शरीर दिखना चाहिए।";
 
 function NewInspection() {
   const navigate = useNavigate();
@@ -83,7 +83,7 @@ function NewInspection() {
   async function run(captured?: string) {
     const current = captured ?? photo;
     if (!current) {
-      toast.error("Take your uniform photo first.");
+      toast.error("पहले अपनी वर्दी की फ़ोटो लें।");
       return;
     }
     setLoading(true);
@@ -116,12 +116,12 @@ function NewInspection() {
         await saveInspection(record);
       } catch (err) {
         console.error("Could not save inspection", err);
-        toast.error("Check finished but could not be saved on this device.");
+        toast.error("जाँच पूरी हुई, लेकिन इस फ़ोन में सेव नहीं हो सकी।");
         return;
       }
       navigate({ to: "/results/$id", params: { id: record.id } });
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Check failed. Please try again.";
+      const message = err instanceof Error ? err.message : "जाँच नहीं हो सकी। कृपया फिर कोशिश करें।";
       setPhotoIssue(message);
       toast.error(message);
     } finally {
@@ -145,11 +145,11 @@ function NewInspection() {
       ) : null}
 
       <AppHeader
-        title="Today's Inspection"
+        title="आज की जाँच"
         subtitle={guardName ? `${guardName} · ${guardId}` : undefined}
         action={
           <button
-            aria-label="Log out"
+            aria-label="लॉग आउट"
             onClick={() => {
               logout();
               navigate({ to: "/" });
@@ -162,10 +162,10 @@ function NewInspection() {
       />
       <div className="space-y-5 px-4 pt-5">
         <section className="rounded-2xl bg-card p-5 card-shadow">
-          <p className="text-base font-bold text-foreground">Take your photo</p>
+          <p className="text-base font-bold text-foreground">अपनी फ़ोटो लें</p>
           <p className="mt-1 text-sm text-muted-foreground">
-            Tap Capture Photo, place the phone at a distance and stand straight — the photo is taken
-            automatically after a 5 second countdown.
+            फ़ोटो लें दबाएँ, फ़ोन को थोड़ी दूर रखें और सीधे खड़े हो जाएँ — 5 सेकंड की गिनती के बाद फ़ोटो
+            अपने आप खिंच जाएगी।
           </p>
           {photoIssue ? (
             <p
@@ -179,7 +179,7 @@ function NewInspection() {
             <>
               <img
                 src={photo}
-                alt="Your uniform photo"
+                alt="आपकी वर्दी की फ़ोटो"
                 className="mt-4 aspect-3/4 w-full rounded-2xl border border-border object-cover"
               />
               <div className="mt-4 grid grid-cols-2 gap-3">
@@ -189,7 +189,7 @@ function NewInspection() {
                   onClick={() => setCameraOpen(true)}
                 >
                   <RefreshCw className="h-5 w-5 shrink-0" />
-                  <span>Retake</span>
+                  <span>दोबारा लें</span>
                 </Button>
                 <Button
                   className="h-14 w-full gap-2 rounded-2xl px-3 text-sm font-semibold transition-transform duration-150 active:scale-[0.97] sm:text-base"
@@ -197,7 +197,7 @@ function NewInspection() {
                   disabled={loading}
                 >
                   <Check className="h-5 w-5 shrink-0" />
-                  <span>Use Photo</span>
+                  <span>यही फ़ोटो लें</span>
                 </Button>
               </div>
             </>
@@ -209,17 +209,17 @@ function NewInspection() {
                 onClick={() => setCameraOpen(true)}
               >
                 <Camera className="h-5 w-5 shrink-0" />
-                <span>Capture Photo</span>
+                <span>फ़ोटो लें</span>
               </Button>
             </>
           )}
         </section>
 
         <section className="rounded-2xl bg-card p-5 card-shadow">
-          <p className="text-sm font-bold text-foreground">How your uniform should look</p>
+          <p className="text-sm font-bold text-foreground">आपकी वर्दी ऐसी होनी चाहिए</p>
           <img
             src={idealUniform}
-            alt="Correct ICICI security guard uniform"
+            alt="सही आईसीआईसीआई सुरक्षा गार्ड वर्दी"
             loading="lazy"
             width={768}
             height={1024}
@@ -228,16 +228,16 @@ function NewInspection() {
         </section>
 
         <section className="rounded-2xl bg-card p-5 card-shadow">
-          <p className="text-sm font-bold text-foreground">360° Uniform View</p>
+          <p className="text-sm font-bold text-foreground">360° वर्दी दृश्य</p>
           <p className="mt-1 text-xs text-muted-foreground">
-            Swipe or tap the arrows to see every side of the correct uniform.
+            सही वर्दी को हर तरफ़ से देखने के लिए स्वाइप करें या तीर दबाएँ।
           </p>
           <Guard360 className="mt-3" />
           <Link
             to="/reference"
             className="mt-4 block rounded-xl border border-border py-3 text-center text-sm font-semibold text-primary"
           >
-            Open full Uniform Standard Guide
+            पूरी वर्दी गाइड खोलें
           </Link>
         </section>
       </div>
@@ -250,15 +250,15 @@ function NewInspection() {
         >
           {loading ? (
             <>
-              <Loader2 className="mr-2 h-5 w-5 animate-spin" /> Checking your uniform…
+              <Loader2 className="mr-2 h-5 w-5 animate-spin" /> आपकी वर्दी जाँची जा रही है…
             </>
           ) : (
-            "Check My Uniform"
+            "मेरी वर्दी जाँचें"
           )}
         </Button>
         {!canCheck && !loading ? (
           <p className="mt-2 text-center text-sm text-muted-foreground">
-            {!photo ? "Capture your uniform photo to continue." : FULL_BODY_MESSAGE}
+            {!photo ? "आगे बढ़ने के लिए अपनी वर्दी की फ़ोटो लें।" : FULL_BODY_MESSAGE}
           </p>
         ) : null}
       </div>
